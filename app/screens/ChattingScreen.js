@@ -41,7 +41,7 @@ export default class ChattingScreen extends Component {
       messages: []
     };
     // 聊天人username或groupId
-    this.chatContactId = this.props.navigation.state.params.contactId;
+    this.chatContactId = this.props.navigation.state.params.chatContactId;
     // 聊天人昵称或群名称
     this.chatUsernick = this.props.navigation.state.params.name;
     // 聊天类型，'single' or 'group'
@@ -68,16 +68,16 @@ export default class ChattingScreen extends Component {
       } else {
         options.username = this.chatContactId;
       }
-      LogUtil.d("enterConversation: " + JSON.stringify(options));
-      JMessage.enterConversation(
-        options,
-        conversation => {
-          LogUtil.d("enter conversation: chat with " + this.chatUsernick);
-        },
-        error => {
-          LogUtil.e("enter conversation error: " + JSON.stringify(error));
-        }
-      );
+      // LogUtil.d("enterConversation: " + JSON.stringify(options));
+      // JMessage.enterConversation(
+      //   options,
+      //   conversation => {
+      //     LogUtil.d("enter conversation: chat with " + this.chatUsernick);
+      //   },
+      //   error => {
+      //     LogUtil.e("enter conversation error: " + JSON.stringify(error));
+      //   }
+      // );
 
       // 注册返回监听器
       this.backHandler = () => {
@@ -105,6 +105,7 @@ export default class ChattingScreen extends Component {
     this.loadChattingMsgs();
 
     // 进入聊天界面后，通知会话列表刷新
+    CountEmitter.emit("hasToken")
     CountEmitter.emit("notifyConversationListRefresh");
 
     // 应用收到新消息，会触发这里的监听器，从而刷新聊天消息列表
@@ -132,18 +133,18 @@ export default class ChattingScreen extends Component {
     } else {
       options.username = this.chatContactId;
     }
-    JMessage.getHistoryMessages(
-      options,
-      msgArr => {
-        LogUtil.d("conversation msgs: ", msgArr);
-        this.setState({ messages: msgArr }, () => {
-          this.scroll();
-        });
-      },
-      error => {
-        LogUtil.w("load all chat msg error: " + JSON.stringify(error));
-      }
-    );
+    // JMessage.getHistoryMessages(
+    //   options,
+    //   msgArr => {
+    //     LogUtil.d("conversation msgs: ", msgArr);
+    //     this.setState({ messages: msgArr }, () => {
+    //       this.scroll();
+    //     });
+    //   },
+    //   error => {
+    //     LogUtil.w("load all chat msg error: " + JSON.stringify(error));
+    //   }
+    // );
   }
 
   render() {
@@ -383,7 +384,7 @@ export default class ChattingScreen extends Component {
     let contactAvatar = require("../../images/avatar.png");
     if (this.chatType === "group") {
       // 群聊的头像为某个人的头像
-      let thumb = item.from.avatarThumbPath;
+      let thumb = item.from.avatar;
       if (thumb) {
         contactAvatar = thumb;
       }
@@ -416,8 +417,8 @@ export default class ChattingScreen extends Component {
   // 渲染发送出去的文本消息
   renderSendTextMsg(item) {
     let avatar = require("../../images/avatar.png");
-    if (!Utils.isEmpty(UserInfoUtil.userInfo.avatarThumbPath)) {
-      avatar = UserInfoUtil.userInfo.avatarThumbPath;
+    if (!Utils.isEmpty(UserInfoUtil.userInfo.avatar)) {
+      avatar = UserInfoUtil.userInfo.avatar;
     }
     // 发送出去的消息
     return (
@@ -445,7 +446,7 @@ export default class ChattingScreen extends Component {
     let contactAvatar = require("../../images/avatar.png");
     if (this.chatType === "group") {
       // 群聊的头像为某个人的头像
-      let thumb = item.from.avatarThumbPath;
+      let thumb = item.from.avatar;
       if (thumb) {
         contactAvatar = thumb;
       }
@@ -487,8 +488,8 @@ export default class ChattingScreen extends Component {
   // 渲染发送的图片消息
   renderSendImgMsg(item) {
     let avatar = require("../../images/avatar.png");
-    if (!Utils.isEmpty(UserInfoUtil.userInfo.avatarThumbPath)) {
-      avatar = UserInfoUtil.userInfo.avatarThumbPath;
+    if (!Utils.isEmpty(UserInfoUtil.userInfo.avatar)) {
+      avatar = UserInfoUtil.userInfo.avatar;
     }
     return (
       <View style={{ flexDirection: "column", alignItems: "center" }}>

@@ -6,6 +6,7 @@ import {
 import React, { Component } from "react";
 import TitleBar from "./app/views/TitleBar";
 import ContactsScreen from "./app/screens/ContactsScreen";
+import GroupScreen from "./app/screens/GroupScreen"
 import FindScreen from "./app/screens/FindScreen";
 import MeScreen from "./app/screens/MeScreen";
 import SearchScreen from "./app/screens/SearchScreen";
@@ -56,6 +57,7 @@ import {
 } from "react-native";
 
 import JMessage from "jmessage-react-plugin";
+import io from "socket.io-client";
 
 import TabConfig from "./app/configs/TabNavConfigs";
 
@@ -75,6 +77,8 @@ class HomeScreen extends Component {
       checkedUpgrade: true, // 标记是否检查了更新，这里置为true则不会检查更新，设置为false则每次启动时检查更新，该功能默认不开启
       recentConversation: []
     };
+    // console.log("star socket");
+    // this.initSocket(); 
     this.registerJIMListener();
   }
 
@@ -119,6 +123,15 @@ class HomeScreen extends Component {
       }
     );
   }
+
+  //初始化socket
+
+  // initSocket() {
+  //   let uri = Api.BASE_URL;
+    
+  //   this.socket = io(uri + '?token=' + );
+  //   this.socket.emit("sayhi","hello");
+  // }
 
   // 注册极光IM的监听器
   registerJIMListener() {
@@ -274,13 +287,13 @@ class HomeScreen extends Component {
     } else {
       // 单聊
       contactId = target.username; // 聊天人的username
-      nick = target.nickname;
+      nick = target.nick;
       if (Utils.isEmpty(nick)) {
         nick = contactId;
       }
       avatar = require("./images/ic_list_icon.png");
-      if (!Utils.isEmpty(target.avatarThumbPath)) {
-        avatar = target.avatarThumbPath;
+      if (!Utils.isEmpty(target.avatar)) {
+        avatar = target.avatar;
         // if (Platform.OS === "android") {
         //   avatar = { uri: "file://" + target.avatarThumbPath };
         // } else {
@@ -362,7 +375,7 @@ class HomeScreen extends Component {
           let conv = this.state.recentConversation[i];
           if (
             conv.target.username === uname &&
-            conv.target.avatarThumbPath !== path
+            conv.target.avatar !== path
           ) {
             LogUtil.d(`${uname}用户头像发生了改变，更新会话列表...`);
             this.loadConversations();
@@ -469,16 +482,24 @@ const styles = StyleSheet.create({
   }
 });
 
+// const socket = io()
+CountEmitter.addListener(
+  "hsaToken",
+  function(){
+    console.log("trigger hastoken")
+  }
+);
+
 const tabNavigatorScreen = createBottomTabNavigator(
   {
     Home: HomeScreen,
+    Find: GroupScreen,
     Contacts: ContactsScreen,
-    Find: FindScreen,
     Me: MeScreen
   },
   {
     tabBarOptions: {
-      activeTintColor: "#45C018",
+      activeTintColor: "#c7bcbd",
       inactiveTintColor: "#999999",
       showIcon: true,
       labelStyle: {

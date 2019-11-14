@@ -45,7 +45,7 @@ export default class ChatBottomBar extends Component {
   renderKeyBoardView() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.5}
           onPress={this.handlePress.bind(this, "soundBtn")}
         >
@@ -53,7 +53,7 @@ export default class ChatBottomBar extends Component {
             style={styles.icon}
             source={require("../../images/ic_chat_sound.png")}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TextInput
           value={this.state.inputMsg}
           onChangeText={text => {
@@ -186,7 +186,13 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   input: {
-    flex: 1
+    flex: 1,
+    height: 40,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: '#d6d7da',
+    marginRight: 10
+
   },
   icon: {
     width: 40,

@@ -13,7 +13,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  ImageBackground
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -23,8 +24,12 @@ export default class LoginScreen extends Component {
     super(props);
     this.state = {
       username: "",
+      verifyCode: "",
       password: "",
       confirmPwd: "",
+      inviteCode: "",
+      count:60,
+      liked:true,
       showProgress: false
     };
   }
@@ -39,55 +44,127 @@ export default class LoginScreen extends Component {
               cancel={() => this.setState({ showProgress: false })}
             />
           ) : null}
-          <Image
-            source={require("../../images/ic_launcher.png")}
-            style={{ width: 100, height: 100, marginTop: 100 }}
-          />
+          {/*<Image*/}
+          {/*  source={require("../../images/ic_launcher.png")}*/}
+          {/*  style={{ width: 100, height: 100, marginTop: 100 }}*/}
+          {/*/>*/}
           <View style={styles.pwdView}>
             <View style={styles.pwdContainer}>
-              <Text style={{ fontSize: 16 }}> 用户名：</Text>
+              <Image source={require("../../imgs/ic_phone~iphone.png")}
+                     style={{width:25}}
+                     resizeMode="contain"
+              />
               <TextInput
-                onChangeText={text => {
+                  placeholder = "请输入手机号"
+                  style={styles.textInput}
+                  onChangeText={text => {
                   this.setState({ username: text });
                 }}
                 style={styles.textInput}
                 underlineColorAndroid="transparent"
               />
+              <TouchableOpacity activeOpacity={0.6}
+                                onPress={() => this.getVerifyCode()}
+              >
+                <View style={styles.verifyBtn}>
+
+                  <Text style={{color:"#ffffff",padding:5}}>
+                    {
+                      this.state.liked
+                          ? '获取验证码'
+                          : `${this.state.count} 秒后重发`
+                    }
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.pwdDivider} />
+
             <View style={styles.pwdContainer}>
-              <Text style={{ fontSize: 16 }}> 密码：</Text>
+              <Image source={require("../../imgs/ic_auth~iphone.png")}
+                     style={{width:25}}
+                     resizeMode="contain"
+              />
               <TextInput
-                secureTextEntry={true}
-                onChangeText={text => {
-                  this.setState({ password: text });
-                }}
-                style={styles.textInput}
-                underlineColorAndroid="transparent"
+                  placeholder = "请输入验证码"
+                  style={styles.textInput}
+                  onChangeText={text => {
+                    this.setState({ verifyCode: text });
+                  }}
+                  style={styles.textInput}
+                  underlineColorAndroid="transparent"
               />
             </View>
             <View style={styles.pwdDivider} />
+
             <View style={styles.pwdContainer}>
-              <Text style={{ fontSize: 16 }}>重复密码：</Text>
+              <Image source={require("../../imgs/ic_pwd~iphone.png")}
+                     style={{width:25}}
+                     resizeMode="contain"
+              />
               <TextInput
-                secureTextEntry={true}
-                onChangeText={text => {
-                  this.setState({ confirmPwd: text });
-                }}
-                style={styles.textInput}
-                underlineColorAndroid="transparent"
+                  placeholder = "请输入密码"
+                  style={styles.textInput}
+                  secureTextEntry={true}
+                  onChangeText={text => {
+                    this.setState({ password: text });
+                  }}
+                  style={styles.textInput}
+                  underlineColorAndroid="transparent"
               />
             </View>
             <View style={styles.pwdDivider} />
+
+            <View style={styles.pwdContainer}>
+              <Image source={require("../../imgs/ic_pwd~iphone.png")}
+                     style={{width:25}}
+                     resizeMode="contain"
+              />
+              <TextInput
+                  placeholder = "确认密码"
+                  style={styles.textInput}
+                  secureTextEntry={true}
+                  onChangeText={text => {
+                    this.setState({ confirmPwd: text });
+                  }}
+                  style={styles.textInput}
+                  underlineColorAndroid="transparent"
+              />
+            </View>
+            <View style={styles.pwdDivider} />
+
+            <View style={styles.pwdContainer}>
+              <Image source={require("../../imgs/ic_recommend~iphone.png")}
+                     style={{width:25}}
+                     resizeMode="contain"
+              />
+              <TextInput
+                  placeholder = "邀请码"
+                  style={styles.textInput}
+                  onChangeText={text => {
+                    this.setState({ inviteCode: text });
+                  }}
+                  style={styles.textInput}
+                  underlineColorAndroid="transparent"
+              />
+            </View>
+            <View style={styles.pwdDivider} />
+
+
             <TouchableOpacity
               activeOpacity={0.6}
               onPress={() => this.register()}
             >
+            <ImageBackground style={styles.loginBtnBg}
+                             imageStyle={{ borderRadius: 15}}
+                             source={require('../../imgs/bg_me~iphone.png')}>
               <View style={styles.loginBtn}>
                 <Text style={{ color: "#FFFFFF", fontSize: 16 }}>注册</Text>
               </View>
+            </ImageBackground>
             </TouchableOpacity>
           </View>
+
         </View>
       </View>
     );
@@ -101,16 +178,85 @@ export default class LoginScreen extends Component {
     return false;
   }
 
-  register() {
+  getVerifyCode() {
+    if (this.state.username === '') {
+      Toast.showShortCenter("请先输入手机号");
+      return
+    } else if (!(/^1[34578]\d{9}$/.test(this.state.username))) {
+      Toast.showShortCenter("手机号格式不正确")
+      return
+    } else {
+      // this.setState({
+      //   noGetMessageDisplay: 'block'
+      // })
+      const {liked} = this.state;
+      if (!liked) {
+        return;
+      }
+      console.log("点击获取验证码")
+      fetch(Api.VERIFY_CODE,{
+        method: "POST",
+        headers:{
+          Accept:"application/json",
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          "phone":this.state.username
+        })
+      })
+        .then(res => res.json())
+        .then(json => {
+            if(!Utils.isEmpty(json)){
+                if(json.status == 200){
+
+                }else{
+                  this.setState({ showProgress: false });
+                  Toast.showShortCenter("获取验证码失败");
+                }
+            }else{
+              this.setState({showProgress:false})
+            }
+        })
+      this.countDown();
+
+    }
+  }
+
+
+  countDown() {
+    const {count} = this.state;
+    if (count === 1) {
+      this.setState({
+        count: 60,
+        liked: true,
+      });
+    } else {
+      this.setState({
+        count: count - 1,
+        liked: false,
+      });
+      setTimeout(this.countDown.bind(this), 1000);
+    }
+  }
+
+  register(){
     var username = this.state.username;
     var password = this.state.password;
     var confirmPwd = this.state.confirmPwd;
+    var verifyCode = this.state.verifyCode;
+    var inviteCode = this.state.inviteCode;
+    if (Utils.isEmpty(verifyCode)){
+      Toast.showShortCenter("手机验证码不能为空");
+    }
+    if (Utils.isEmpty(inviteCode)){
+      Toast.showShortCenter("邀请码能为空");
+    }
     if (
       Utils.isEmpty(username) ||
       Utils.isEmpty(password) ||
       Utils.isEmpty(confirmPwd)
     ) {
-      Toast.showShortCenter("用户名或密码不能为空！");
+      Toast.showShortCenter("手机号或密码不能为空！");
       return;
     }
     if (this.isContainChinese(username)) {
@@ -132,21 +278,36 @@ export default class LoginScreen extends Component {
     this.setState({ showProgress: true });
     //请求服务器注册接口
     var registerUrl = Api.REGISTER_URL;
-    let formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
+    // let formData = new FormData();
+    // formData.append("username", username);
+    // formData.append("password", password);
+    // formData.append("verifyCode",verifyCode)
+    // formData.append("inviteCode",inviteCode)
+
     fetch(registerUrl, {
       method: "POST",
-      body: formData
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "phone": username,
+        "code": verifyCode,
+        "registerCode": inviteCode,
+        "password":password
+      })
     })
       .then(res => res.json())
       .then(json => {
+          console.log(json);
         if (!Utils.isEmpty(json)) {
-          if (json.code === 1) {
-            this.registerToJIM(username, password);
+          if (json.status === 200) {
+            // this.registerToJIM(username, password);
+            //注册成功
+            Toast.showShortCenter("注册成功");
           } else {
             this.setState({ showProgress: false });
-            Toast.showShortCenter(json.msg);
+            Toast.showShortCenter(json.message);
           }
         } else {
           this.setState({ showProgress: false });
@@ -207,22 +368,27 @@ const styles = StyleSheet.create({
     marginRight: 40
   },
   pwdDivider: {
-    width: width - 60,
-    marginLeft: 30,
-    marginRight: 30,
+    width: width,
     height: 1,
-    backgroundColor: "#00BC0C"
+    backgroundColor: "#e5e6e5"
   },
-  loginBtn: {
+  loginBtnBg: {
     width: width - 40,
     marginLeft: 20,
     marginRight: 20,
     marginTop: 50,
     height: 50,
-    borderRadius: 3,
-    backgroundColor: "#00BC0C",
     justifyContent: "center",
     alignItems: "center"
+  },
+  loginBtn: {
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  verifyBtn:{
+    backgroundColor:"#f08532",
+    borderRadius:10
   },
   loading: {
     flex: 1,

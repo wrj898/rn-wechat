@@ -30,8 +30,8 @@ class CustomTab extends Component {
       );
     }
     let tabIcon = this.props.f
-      ? require("../../images/ic_contacts_selected.png")
-      : require("../../images/ic_contacts_normal.png");
+      ? require("../../imgs/ic_contact_sel~iphone.png")
+      : require("../../imgs/ic_contact_nor~iphone.png");
     return (
       <View>
         <Image
@@ -52,53 +52,53 @@ export default class TabNavConfigs {
 
   // 微信tab
   static TAB_WE_CHAT_CONF = {
-    tabBarLabel: "微信",
+    tabBarLabel: "消息",
     tabBarIcon: ({ focused, tintColor }) => {
       if (focused) {
         return (
           <Image
             style={styles.tabBarIcon}
-            source={require("../../images/ic_weixin_selected.png")}
+            source={require("../../imgs/ic_msg_sel~iphone.png")}
           />
         );
       }
       return (
         <Image
           style={styles.tabBarIcon}
-          source={require("../../images/ic_weixin_normal.png")}
+          source={require("../../imgs/ic_msg_nor~iphone.png")}
         />
       );
     }
   };
-
+  //群组
+  static TAB_FIND_CONF = {
+    tabBarLabel: "群组",
+    tabBarIcon: ({ focused, tintColor }) => {
+      if (focused) {
+        return (
+            <Image
+                style={styles.tabBarIcon}
+                source={require("../../imgs/ic_group_sel~iphone.png")}
+            />
+        );
+      }
+      return (
+          <Image
+              style={styles.tabBarIcon}
+              source={require("../../imgs/ic_group_nor~iphone.png")}
+          />
+      );
+    }
+  };
   // 联系人tab
   static TAB_CONTACTS_CONF = {
-    tabBarLabel: "联系人",
+    tabBarLabel: "通讯录",
     tabBarIcon: ({ focused, tintColor }) => {
       return <CustomTab f={focused} />
     }
   };
 
-  // 发现
-  static TAB_FIND_CONF = {
-    tabBarLabel: "发现",
-    tabBarIcon: ({ focused, tintColor }) => {
-      if (focused) {
-        return (
-          <Image
-            style={styles.tabBarIcon}
-            source={require("../../images/ic_find_selected.png")}
-          />
-        );
-      }
-      return (
-        <Image
-          style={styles.tabBarIcon}
-          source={require("../../images/ic_find_normal.png")}
-        />
-      );
-    }
-  };
+
 
   // 我
   static TAB_MINE_CONF = {
@@ -108,14 +108,14 @@ export default class TabNavConfigs {
         return (
           <Image
             style={styles.tabBarIcon}
-            source={require("../../images/ic_me_selected.png")}
+            source={require("../../imgs/ic_me_sel~iphone.png")}
           />
         );
       }
       return (
         <Image
           style={styles.tabBarIcon}
-          source={require("../../images/ic_me_normal.png")}
+          source={require("../../imgs/ic_me_nor~iphone.png")}
         />
       );
     }

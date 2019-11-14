@@ -28,16 +28,16 @@ export default class UserInfoUtil {
   static getUserAvatar() {
     let info = UserInfoUtil.userInfo;
     if (info) {
-      if (!Utils.isEmpty(info.avatarThumbPath)) {
-        if (info.avatarThumbPath.startsWith("http")) {
-          return { uri: info.avatarThumbPath };
-        } else if (info.avatarThumbPath.startsWith("/")) {
+      if (!Utils.isEmpty(info.avatar)) {
+        if (info.avatar.startsWith("http")) {
+          return { uri: info.avatar};
+        } else if (info.avatar.startsWith("/")) {
           // 这里Android跟iOS平台不一样，注意区分
           if (Platform.OS === "android") {
-            return { uri: "file://" + info.avatarThumbPath };
+            return { uri: "file://" + info.avatar};
           } else {
-            LogUtil.d(info.avatarThumbPath);
-            return { uri: info.avatarThumbPath };
+            LogUtil.d(info.avatar);
+            return { uri: info.avatar};
           }
         }
       }

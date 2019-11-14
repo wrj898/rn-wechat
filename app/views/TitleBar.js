@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   Button,
   PixelRatio,
-  Platform
+  Platform, ImageBackground
 } from "react-native";
 
 const { width, height } = Dimensions.get("window");
@@ -37,23 +37,25 @@ export default class TitleBar extends Component {
 
   renderAndroid() {
     return (
+      <ImageBackground style={{ width:width,height:50}}
+                       source={require('../../imgs/bg_me~iphone.png')}>
       <View style={styles.titleBarContainer}>
         <View style={styles.titleBarTextContainer}>
-          <Text style={styles.title}>RN微信</Text>
+          <Text style={styles.title}>消息</Text>
         </View>
         <View style={styles.titleBarButtonContainer}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={this.handleSearchClick}
-          >
-            <Image
-              source={require("../../images/ic_search.png")}
-              style={styles.titleBarImg}
-            />
-          </TouchableOpacity>
+          {/*<TouchableOpacity*/}
+          {/*  activeOpacity={0.5}*/}
+          {/*  onPress={this.handleSearchClick}*/}
+          {/*>*/}
+          {/*  <Image*/}
+          {/*    source={require("../../images/ic_search.png")}*/}
+          {/*    style={styles.titleBarImg}*/}
+          {/*  />*/}
+          {/*</TouchableOpacity>*/}
           <TouchableOpacity activeOpacity={0.5} onPress={this.handleAddClick}>
             <Image
-              source={require("../../images/ic_add.png")}
+              source={require("../../imgs/icon_switch_shortcut~iphone.png")}
               style={styles.titleBarImg}
             />
           </TouchableOpacity>
@@ -75,23 +77,22 @@ export default class TitleBar extends Component {
               }}
               nav={this.props.nav}
               menuIcons={[
-                require("../../images/ic_pop_group_chat.png"),
-                require("../../images/ic_pop_add_friends.png"),
-                require("../../images/ic_pop_scan.png"),
-                require("../../images/ic_pop_pay.png"),
-                require("../../images/ic_pop_help.png")
+                require("../../imgs/icon_shortcut_recharge~iphone.png"),
+                require("../../imgs/icon_shortcut_dl~iphone.png"),
+                require("../../imgs/icon_shortcut_help~iphone.png"),
+                require("../../imgs/icon_shortcut_rp~iphone.png")
               ]}
               menuTexts={[
-                "发起群聊",
-                "添加朋友",
-                "扫一扫",
-                "收付款",
-                "帮助与反馈"
+                "快速充值",
+                "代理中心",
+                "帮助中心",
+                "玩法规则"
               ]}
             />
           </View>
         </View>
       </View>
+      </ImageBackground>
     );
   }
 
@@ -143,18 +144,16 @@ export default class TitleBar extends Component {
                 }}
                 nav={this.props.nav}
                 menuIcons={[
-                  require("../../images/ic_pop_group_chat.png"),
-                  require("../../images/ic_pop_add_friends.png"),
-                  require("../../images/ic_pop_scan.png"),
-                  require("../../images/ic_pop_pay.png"),
-                  require("../../images/ic_pop_help.png")
+                  require("../../imgs/icon_shortcut_recharge~iphone.png"),
+                  require("../../imgs/icon_shortcut_dl~iphone.png"),
+                  require("../../imgs/icon_shortcut_help~iphone.png"),
+                  require("../../imgs/icon_shortcut_rp~iphone.png")
                 ]}
                 menuTexts={[
-                  "发起群聊",
-                  "添加朋友",
-                  "扫一扫",
-                  "收付款",
-                  "帮助与反馈"
+                  "快速充值",
+                  "代理中心",
+                  "帮助中心",
+                  "玩法规则"
                 ]}
               />
             </View>
@@ -255,7 +254,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: width,
     height: 50,
-    backgroundColor: Global.titleBackgroundColor
+    // backgroundColor: Global.titleBackgroundColor
   },
   titleBarTextContainer: {
     flex: 1,

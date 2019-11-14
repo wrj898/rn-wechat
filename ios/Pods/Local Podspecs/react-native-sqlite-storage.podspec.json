@@ -1,15 +1,13 @@
 {
   "name": "react-native-sqlite-storage",
-  "version": "3.3.9",
+  "version": "3.3.11",
   "summary": "SQLite3 bindings for React Native (Android & iOS)",
   "homepage": "https://github.com/andpor/react-native-sqlite-storage",
   "license": "MIT",
-  "authors": {
-    "name": "Andrzej Porebski"
-  },
+  "authors": "Andrzej Porebski",
   "source": {
-    "git": "git+https://github.com/andpor/react-native-sqlite-storage.git",
-    "tag": "v3.3.9"
+    "git": "https://github.com/andpor/react-native-sqlite-storage.git",
+    "tag": "v3.3.11"
   },
   "platforms": {
     "ios": "8.0",

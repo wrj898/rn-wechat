@@ -49,23 +49,23 @@ export default class SplashScreen extends Component {
 
   componentWillMount() {
     this._isMount = true;
-    this.initJIM();
+    // this.initJIM();
   }
 
   render() {
     return (
-      <View>
+      <View backgroundColor="#f5f5f5">
         <StatusBar backgroundColor="#000000" />
         <Animated.View
           style={[
-            { width: width, height: height },
+            { width: width, height: height, backgroundColor:"#f6f5f5" },
             { opacity: this.state.fadeOutAnim }
           ]}
         >
-          <Image
-            source={require("../../images/splash.jpg")}
-            style={{ width: width, height: height }}
-          />
+          {/*<Image*/}
+          {/*  source={require("../../images/splash.jpg")}*/}
+          {/*  style={{ width: width, height: height }}*/}
+          {/*/>*/}
         </Animated.View>
         {this.state.hasLogin ? null : (
           <Animated.View
@@ -79,7 +79,7 @@ export default class SplashScreen extends Component {
               }}
             >
               <View style={[styles.btnLogin, styles.btnColumn]}>
-                <Text style={styles.button}>登录</Text>
+                <Text style={[styles.button,{ color: "#FFFFFF",textAlign:"center" }]}>登录</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
@@ -90,7 +90,7 @@ export default class SplashScreen extends Component {
               }}
             >
               <View style={[styles.btnRegister, styles.btnColumn]}>
-                <Text style={[styles.button, { color: "#FFFFFF" }]}>注册</Text>
+                <Text style={[styles.button, { color: "#000000",textAlign:"center" }]}>注册</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>
@@ -141,17 +141,18 @@ export default class SplashScreen extends Component {
 
   autoLogin() {
     StorageUtil.get("username", (error, object) => {
+      console.log(object.username);
       if (!error && object && object.username) {
         let username = object.username;
         let password = "";
         // 初始化数据库
         DBHelper.init(username);
         // 获取未读好友消息数
-        DBHelper.getUnreadFriendMsgCount(count => {
-          if (count > 0) {
-            TabConfig.TAB_CONTACT_DOT_COUNT = count;
-          }
-        });
+        // DBHelper.getUnreadFriendMsgCount(count => {
+        //   if (count > 0) {
+        //     TabConfig.TAB_CONTACT_DOT_COUNT = count;
+        //   }
+        // });
         StorageUtil.get("password", (error, object) => {
           if (!error && object && object.password) {
             password = object.password;
@@ -167,39 +168,45 @@ export default class SplashScreen extends Component {
   }
 
   getCurrentUserInfo() {
-    JMessage.getMyInfo(info => {
-      if (info.username === undefined) {
-        // 未登录
-      } else {
-        // 已登录
-        UserInfoUtil.userInfo = info;
-      }
-      LogUtil.d("current user info: ", info); // 获取未读好友消息数
-      DBHelper.getUnreadFriendMsgCount(count => {
-        if (count > 0) {
-          TabConfig.TAB_CONTACT_DOT_COUNT = count;
-        }
-      });
+
+    // JMessage.getMyInfo(info => {
+    //   if (info.username === undefined) {
+    //     // 未登录
+    //   } else {
+    //     // 已登录
+    //     UserInfoUtil.userInfo = info;
+    //   }
+    //   LogUtil.d("current user info: ", info); // 获取未读好友消息数
+    //   DBHelper.getUnreadFriendMsgCount(count => {
+    //     if (count > 0) {
+    //       TabConfig.TAB_CONTACT_DOT_COUNT = count;
+    //     }
+    //   });
       this.fadeOut();
-    });
+    // });
   }
 
-  // 登录极光IM
   loginToJIM(username, password) {
-    this.isAutoLogin = true;
-    JMessage.login(
-      {
-        username: username,
-        password: password
-      },
-      () => {
-        // 登录极光IM成功，获取当前用户信息
-        this.getCurrentUserInfo();
-      },
-      e => {
-        Toast.showShortCenter("登录IM失败：" + e);
+    let key = "userInfo-" + username;
+    StorageUtil.get(key, (error, object) => {
+      if (!error && object && object.username) {
+        UserInfoUtil.userInfo = object;
       }
-    );
+    });
+    // this.isAutoLogin = true;
+    // JMessage.login(
+    //   {
+    //     username: username,
+    //     password: password
+    //   },
+    //   () => {
+    //     // 登录极光IM成功，获取当前用户信息
+        this.getCurrentUserInfo();
+    //   },
+    //   e => {
+    //     Toast.showShortCenter("登录IM失败：" + e);
+    //   }
+    // );
   }
 
   componentWillUnmount() {
@@ -210,9 +217,9 @@ export default class SplashScreen extends Component {
 const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
-    bottom: 50,
+    top : 50,
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "column",
     paddingLeft: 20,
     paddingRight: 20
   },
@@ -226,16 +233,21 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    width: width - 60,
     paddingTop: 10,
     paddingBottom: 10,
     fontSize: 16
   },
   btnLogin: {
-    backgroundColor: "#FFFFFF",
-    marginRight: 15
+    backgroundColor: "#dc6262",
+    // color:"#ffffff",
+    // marginRight: 15
   },
   btnRegister: {
-    backgroundColor: "#00BC0C",
-    marginLeft: 15
+
+    backgroundColor: "#ffffff",
+    // marginLeft: 15,
+    color:"#000000",
+    marginTop:15,
   }
 });

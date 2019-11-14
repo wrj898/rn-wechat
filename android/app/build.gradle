@@ -155,6 +155,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-linear-gradient')
     implementation project(':react-native-fetch-blob')
     implementation project(':react-native-sqlite-storage')
     implementation project(':jmessage-react-plugin')

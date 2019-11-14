@@ -56,7 +56,7 @@ export default class PersonInfoScreen extends Component {
                   <ImageAdapter
                     width={60}
                     height={60}
-                    path={UserInfoUtil.userInfo.avatarThumbPath}
+                    path={UserInfoUtil.userInfo.avatar}
                   />
                 </View>
               </View>
@@ -72,7 +72,7 @@ export default class PersonInfoScreen extends Component {
             <View style={styles.listItem} activeOpacity={0.6}>
               <Text style={styles.listItemLeftText}>昵称</Text>
               <View style={styles.rightContainer}>
-                <Text>{this.state.userInfo.nickname}</Text>
+                <Text>{this.state.userInfo.nick}</Text>
               </View>
               <Image
                 source={require("../../images/ic_right_arrow.png")}
@@ -88,28 +88,28 @@ export default class PersonInfoScreen extends Component {
             </View>
           </View>
           <ListItemDivider />
-          <View style={styles.listItem}>
-            <Text style={styles.listItemLeftText}>二维码名片</Text>
-            <View style={styles.rightContainer}>
-              <Image
-                style={[styles.listItemRight, styles.qrcodeImg]}
-                source={require("../../images/ic_qr_code.png")}
-              />
-            </View>
-          </View>
-          <ListItemDivider />
-          <View style={styles.listItem}>
-            <Text style={styles.listItemLeftText}>更多</Text>
-          </View>
-          <View style={{ height: 20, width: width }} />
-          <TouchableHighlight
-            underlayColor={Global.touchableHighlightColor}
-            onPress={() => {}}
-          >
-            <View style={styles.listItem}>
-              <Text style={styles.listItemLeftText}>我的地址</Text>
-            </View>
-          </TouchableHighlight>
+          {/*<View style={styles.listItem}>*/}
+          {/*  <Text style={styles.listItemLeftText}>二维码名片</Text>*/}
+          {/*  <View style={styles.rightContainer}>*/}
+          {/*    <Image*/}
+          {/*      style={[styles.listItemRight, styles.qrcodeImg]}*/}
+          {/*      source={require("../../images/ic_qr_code.png")}*/}
+          {/*    />*/}
+          {/*  </View>*/}
+          {/*</View>*/}
+          {/*<ListItemDivider />*/}
+          {/*<View style={styles.listItem}>*/}
+          {/*  <Text style={styles.listItemLeftText}>更多</Text>*/}
+          {/*</View>*/}
+          {/*<View style={{ height: 20, width: width }} />*/}
+          {/*<TouchableHighlight*/}
+          {/*  underlayColor={Global.touchableHighlightColor}*/}
+          {/*  onPress={() => {}}*/}
+          {/*>*/}
+          {/*  <View style={styles.listItem}>*/}
+          {/*    <Text style={styles.listItemLeftText}>我的地址</Text>*/}
+          {/*  </View>*/}
+          {/*</TouchableHighlight>*/}
         </View>
         <View
           style={{

@@ -1,13 +1,20 @@
 
 export default class Api {
-  static BASE_URL = 'http://rnwechat.yubo.me';
-  // static BASE_URL = 'http://10.234.14.136:5000';
+  static BASE_URL = 'http://api.packet.imusheng.net';
+  static AVATAR_PREFIX = 'http://static.duoduo111.cn/';
+  // static BASE_URL = 'http://192.168.1.109:6001';
+
+
 
   // 登录
-  static LOGIN_URL = Api.BASE_URL + '/user/login';
+  static LOGIN_URL = Api.BASE_URL + '/api/login';
+
+  //获取验证码
+
+  static VERIFY_CODE = Api.BASE_URL + '/api/code'
 
   // 注册
-  static REGISTER_URL = Api.BASE_URL + '/user/register';
+  static REGISTER_URL = Api.BASE_URL + '/api/register';
 
   // 发布朋友圈
   static PUBLISH_MOMENT_URL = Api.BASE_URL + '/moments/publish';

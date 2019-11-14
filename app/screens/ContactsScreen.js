@@ -10,6 +10,8 @@ import JMessage from "jmessage-react-plugin";
 import TabConfig from "../configs/TabNavConfigs";
 import CountEmitter from "../event/CountEmitter";
 import ImageAdapter from "../views/ImageAdapter";
+import Api from "../api/Api"
+import UserInfoUtil from "../utils/UserInfoUtil";
 
 import {
   Dimensions,
@@ -62,17 +64,45 @@ export default class ContactsScreen extends Component {
   }
 
   getContacts() {
-    JMessage.getFriends(
-      friendArr => {
-        this.setState({
-          loadingState: Global.loadSuccess,
-          contactData: friendArr
-        });
+    // JMessage.getFriends(
+    //   friendArr => {
+    //     this.setState({
+    //       loadingState: Global.loadSuccess,
+    //       contactData: friendArr
+    //     });
+    //   },
+    //   error => {
+    //     LogUtil.w(`get friends error: ${error.code}, ${error.description}`);
+    //   }
+    // );
+    fetch(Api.BASE_URL + "/rooms", {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token
       },
-      error => {
-        LogUtil.w(`get friends error: ${error.code}, ${error.description}`);
-      }
-    );
+      method: 'GET',
+    })
+        .then(res => res.json())
+        .then(json => {
+          // console.log(json)
+          if (!Utils.isEmpty(json)) {
+            if (json.status === 200){
+              this.setState({
+                loadingState: Global.loadSuccess,
+                contactData: json.data.list
+              });
+            }else{
+              Toast.showShortCenter("未知错误");
+            }
+          } else {
+            Toast.showShortCenter("未知错误");
+          }
+        })
+        .catch(e => {
+          Toast.showShortCenter("网络请求出错: " + e);
+        });
+
   }
 
   render() {
@@ -137,16 +167,17 @@ export default class ContactsScreen extends Component {
     var contacts = this.state.contactData;
     for (var i = 0; i < contacts.length; i++) {
       var item = contacts[i];
-      var name = item.nickname || item.username;
-      var pinyin = PinyinUtil.getFullChars(item.username).toUpperCase();
+      var name = item.name;
+      // var name = item.name || item.username;
+      // var pinyin = PinyinUtil.getFullChars(item.username).toUpperCase();
       // var pinyin = contacts[i].pinyin.toUpperCase();
-      var firstLetter = pinyin.substring(0, 1);
-      if (firstLetter < "A" || firstLetter > "Z") {
-        firstLetter = "#";
-      }
+      // var firstLetter = pinyin.substring(0, 1);
+      // if (firstLetter < "A" || firstLetter > "Z") {
+      //   firstLetter = "#";
+      // }
       let icon = require("../../images/avatar.png");
-      if (!Utils.isEmpty(item.avatarThumbPath)) {
-        icon = item.avatarThumbPath;
+      if (!Utils.isEmpty(item.avatar)) {
+        icon = item.avatar;
         // if (Platform.OS === "android") {
         //   icon = { uri: "file://" + item.avatarThumbPath };
         // } else {
@@ -156,13 +187,15 @@ export default class ContactsScreen extends Component {
       listData.push({
         key: index++,
         icon: icon,
-        title: item.username,
+        title: item.name,
+        _id:item._id,
         nick: name,
-        pinyin: pinyin,
-        firstLetter: firstLetter,
+        pinyin: "A",
+        firstLetter: "A",
         sectionStart: false
       });
     }
+    // console.log("---------------")
     // 按拼音排序
     listData.sort(function(a, b) {
       if (a.pinyin === undefined || b.pinyin === undefined) {
@@ -176,7 +209,7 @@ export default class ContactsScreen extends Component {
       }
       return 0;
     });
-    listData = headerListData.concat(listData);
+    // listData = headerListData.concat(listData);
     // 根据首字母分区
     for (var i = 0; i < listData.length; i++) {
       var obj = listData[i];
@@ -209,9 +242,9 @@ export default class ContactsScreen extends Component {
             keyExtractor={(item, index) => "list-item-" + index}
             getItemLayout={this._getItemLayout}
           />
-          <SideBar
+          {/* <SideBar
             onLetterSelectedListener={this.onSideBarSelected.bind(this)}
-          />
+          /> */}
         </View>
         <View style={styles.divider} />
       </View>
@@ -256,21 +289,27 @@ export default class ContactsScreen extends Component {
   }
 
   onListItemClick(item) {
-    let index = item.item.key;
-    if (index == 0) {
-      // 新的朋友
-      this.props.navigation.navigate("FriendMsg", {
-        title: "新的朋友",
-        data: item.item
-      });
-    } else if (index >= 1 && index <= 3) {
-      Toast.showShortCenter("功能未实现");
-    } else {
-      this.props.navigation.navigate("ContactDetail", {
-        title: "详细资料",
-        data: item.item
-      });
-    }
+    // let index = item.item.key;
+    // if (index == 0) {
+    //   // 新的朋友
+    //   this.props.navigation.navigate("FriendMsg", {
+    //     title: "新的朋友",
+    //     data: item.item
+    //   });
+    // } else if (index >= 1 && index <= 3) {
+    //   Toast.showShortCenter("功能未实现");
+    // } else {
+    //   this.props.navigation.navigate("ContactDetail", {
+    //     title: "详细资料",
+    //     data: item.item
+    //   });
+    // }
+    this.props.navigation.navigate("Chatting", {
+      chatContactId:item.item._id,
+      name: item.item.nick,
+      type: "group"
+      // avatar: this.userInfo.icon
+    });
   }
 
   _renderItem = item => {
@@ -307,7 +346,7 @@ export default class ContactsScreen extends Component {
       );
     }
     if (item.item.firstLetter && item.item.title) {
-      this.downloadUserAvatarThumb(item.item.title);
+      // this.downloadUserAvatarThumb(item.item.title);
     }
     return (
       <View>
@@ -324,9 +363,9 @@ export default class ContactsScreen extends Component {
             </View>
             {/* <Image style={listItemStyle.image} source={item.item.icon} /> */}
             <Text style={listItemStyle.itemText}>{item.item.title}</Text>
-            <Text style={listItemStyle.subText}>
+            {/* <Text style={listItemStyle.subText}>
               {Utils.isEmpty(item.item.nick) ? "" : "(" + item.item.nick + ")"}
-            </Text>
+            </Text> */}
             {msgDotView}
           </View>
         </TouchableHighlight>

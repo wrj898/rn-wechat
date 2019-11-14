@@ -11,9 +11,10 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Platform
+  Platform,
+  ImageBackground
 } from "react-native";
-
+import LinearGradient from 'react-native-linear-gradient';
 const { width, height } = Dimensions.get("window");
 
 const X_WIDTH = 375;
@@ -34,36 +35,39 @@ export default class CommonTitleBar extends Component {
 
   renderAndroid() {
     return (
-      <View style={styles.container}>
-        <StatusBar backgroundColor="#393A3E" barStyle="light-content" />
-        <View style={styles.content}>
-          <TouchableOpacity activeOpacity={0.5} onPress={this.handleBackClick}>
-            <Image
-              source={require("../../images/ic_back.png")}
-              style={styles.backBtn}
-            />
-          </TouchableOpacity>
-          <View style={styles.btnDivider} />
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{this.props.title}</Text>
-            {Utils.isEmpty(this.props.rightIcon) ? null : (
-              <TouchableOpacity
-                activeOpacity={0.6}
-                onPress={() => this.handleRightClick()}
-              >
-                <Image style={styles.img} source={this.props.rightIcon} />
-              </TouchableOpacity>
-            )}
-            {Utils.isEmpty(this.props.rightBtnText) ? null : (
-              <Button
-                onPress={() => this.props.handleRightBtnClick()}
-                title={this.props.rightBtnText}
-                color="#19AD17"
+      <ImageBackground style={{ width:width,height:50}}
+                       source={require('../../imgs/bg_me~iphone.png')}>
+        <View style={styles.container}>
+          <StatusBar backgroundColor="#393A3E" barStyle="light-content" />
+          <View style={styles.content}>
+            <TouchableOpacity activeOpacity={0.5} onPress={this.handleBackClick}>
+              <Image
+                source={require("../../images/ic_back.png")}
+                style={styles.backBtn}
               />
-            )}
+            </TouchableOpacity>
+            <View style={styles.btnDivider} />
+            <View style={styles.titleContainer}>
+              <Text style={[styles.title,{textAlign:"center"}]}>{this.props.title}</Text>
+              {Utils.isEmpty(this.props.rightIcon) ? null : (
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => this.handleRightClick()}
+                >
+                  <Image style={styles.img} source={this.props.rightIcon} />
+                </TouchableOpacity>
+              )}
+              {Utils.isEmpty(this.props.rightBtnText) ? null : (
+                <Button
+                  onPress={() => this.props.handleRightBtnClick()}
+                  title={this.props.rightBtnText}
+                  color="#19AD17"
+                />
+              )}
+            </View>
           </View>
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 
@@ -133,7 +137,7 @@ const styles = StyleSheet.create({
   content: {
     width: width,
     height: 50,
-    backgroundColor: Global.titleBackgroundColor,
+    // backgroundColor: Global.titleBackgroundColor,
     flexDirection: "row",
     alignItems: "center"
   },
@@ -148,19 +152,21 @@ const styles = StyleSheet.create({
     height: 30,
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: "#888888"
+    // backgroundColor: "#888888"
   },
   titleContainer: {
-    flex: 1,
+    // flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    textAlign: "center",
     paddingLeft: 10,
     paddingRight: 10
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 16,
-    flex: 1
+    fontSize: 16
+    // flex: 1,
+    // alignContent:"center"
   },
   img: {
     width: 30,

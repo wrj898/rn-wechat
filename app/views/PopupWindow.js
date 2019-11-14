@@ -93,14 +93,14 @@ const styles = StyleSheet.create({
     height: height
   },
   modal: {
-    backgroundColor: bgColor,
+    backgroundColor: "#fefffe",
     width: mwidth,
     height: mheight,
     position: "absolute",
     left: width - mwidth - 10,
     top: top,
-    padding: 5,
     justifyContent: "center",
+    // borderRadius:10,
     alignItems: "center"
   },
   itemView: {
@@ -111,10 +111,12 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     paddingTop: 8,
-    paddingBottom: 8
+    paddingBottom: 8,
+    borderBottomColor: '#bbb',
+    borderBottomWidth: StyleSheet.hairlineWidth
   },
   textStyle: {
-    color: "#fff",
+    color: "#000",
     fontSize: 16,
     marginLeft: 5
   },
