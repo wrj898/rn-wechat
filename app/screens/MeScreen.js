@@ -9,6 +9,8 @@ import TabConfig from "../configs/TabNavConfigs";
 import ListItemDivider from "../views/ListItemDivider";
 import ImageAdapter from "../views/ImageAdapter";
 import Toast from "@remobile/react-native-toast";
+import { NavigationActions, StackActions } from "react-navigation"
+import StorageUtil from "../utils/StorageUtil"
 
 import {
     Dimensions,
@@ -170,7 +172,7 @@ export default class MeScreen extends Component {
                         text={"注销"}
                         showDivider={true}
                         handleClick={() => {
-                            this.turnOnPage("CardPackage");
+                            this.logout();
                         }}
                     />
                     <ListItemDivider/>
@@ -186,6 +188,16 @@ export default class MeScreen extends Component {
         } else {
             this.props.navigation.navigate(pageName, params);
         }
+    }
+
+    logout() {
+        StorageUtil.set("hasLogin", { hasLogin: false });
+        Toast.showShortCenter("注销成功");
+        const resetAction = StackActions.reset({
+            index: 0,
+            actions: [NavigationActions.navigate({ routeName: "Splash" })]
+        });
+        this.props.navigation.dispatch(resetAction);
     }
 }
 
