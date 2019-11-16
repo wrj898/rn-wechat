@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.facebook.react.ReactApplication;
+import com.zmxv.RNSound.RNSoundPackage;
+import dk.madslee.imageSequence.RCTImageSequencePackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import io.jchat.android.JMessageReactPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
@@ -30,6 +32,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSoundPackage(),
+            new RCTImageSequencePackage(),
             new LinearGradientPackage(),
             new JMessageReactPackage(!BuildConfig.DEBUG),
             new PickerPackage(),

@@ -41,7 +41,7 @@ export default class TitleBar extends Component {
                        source={require('../../imgs/bg_me~iphone.png')}>
       <View style={styles.titleBarContainer}>
         <View style={styles.titleBarTextContainer}>
-          <Text style={styles.title}>消息</Text>
+          <Text style={styles.title}>全民红包</Text>
         </View>
         <View style={styles.titleBarButtonContainer}>
           {/*<TouchableOpacity*/}
@@ -108,7 +108,7 @@ export default class TitleBar extends Component {
         />
         <View style={styles.titleBarContainer}>
           <View style={styles.titleBarTextContainer}>
-            <Text style={styles.title}>RN微信</Text>
+            <Text style={styles.title}>全民红包</Text>
           </View>
           <View style={styles.titleBarButtonContainer}>
             <TouchableOpacity

@@ -7,7 +7,7 @@ import React, {Component} from "react";
 import TitleBar from "./app/views/TitleBar";
 import ContactsScreen from "./app/screens/ContactsScreen";
 import GroupScreen from "./app/screens/GroupScreen"
-import FindScreen from "./app/screens/FindScreen";
+import HomeScreen from "./app/screens/HomeScreen";
 import RedPacket from "./app/screens/RedPacket";
 import MeScreen from "./app/screens/MeScreen";
 import SearchScreen from "./app/screens/SearchScreen";
@@ -61,6 +61,7 @@ import JMessage from "jmessage-react-plugin";
 import io from "socket.io-client";
 
 import TabConfig from "./app/configs/TabNavConfigs";
+import Base from "./app/screens/Base";
 
 const receiveCustomMsgEvent = "receivePushMsg";
 const receiveNotificationEvent = "receiveNotification";
@@ -69,7 +70,7 @@ const getRegistrationIdEvent = "getRegistrationId";
 
 const {width} = Dimensions.get("window");
 
-class HomeScreen extends Component {
+class SuspendScreen extends Component {
     static navigationOptions = TabConfig.TAB_WE_CHAT_CONF;
 
     constructor(props) {
@@ -85,48 +86,74 @@ class HomeScreen extends Component {
 
     // 加载当前用户的会话
     loadConversations() {
-        JMessage.getConversations(
-            conArr => {
-                // conArr: 会话数组。
-                // 刷新会话列表
-                if (conArr != null && conArr.length > 0) {
-                    // LogUtil.d("conversation list: " + JSON.stringify(conArr));
-                    let showList = false;
-                    for (let i = 0; i < conArr.length; i++) {
-                        // LogUtil.w(JSON.stringify(conArr[i]));
-                        // 这里可以取到会话，但是删除好友后，会话里没有latestMessage，如果所有的会话都没有latestMessage，则不显示会话列表
-                        if (conArr[i].latestMessage) {
-                            showList = true;
-                        }
-                        // 如果当前正在跟这个人聊天，则重置该人的未读消息数
-                        if (Global.currentChattingUsername == conArr[i].target.username) {
-                            conArr[i].unreadCount = 0;
-                            JMessage.resetUnreadMessageCount(
-                                {
-                                    type: Global.currentChattingType,
-                                    username: Global.currentChattingUsername,
-                                    appKey: Global.JIMAppKey
-                                },
-                                () => {
-                                },
-                                error => {
-                                }
-                            );
-                        }
-                    }
-                    if (showList) {
-                        this.setState({recentConversation: conArr});
-                    }
-                }
+        console.log("-------Home------",UserInfoUtil.userInfo)
+        let url = Api.BASE_URL;
+        let token = UserInfoUtil.userInfo.token;
+        this.setState({showProgress: true});
+        fetch(url + '/rooms/me', {
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
             },
-            error => {
-                var code = error.code;
-                var desc = error.description;
-                LogUtil.w(`err code: ${code}, err desc: ${desc}`);
-            }
-        );
+            method: "GET"
+        })
+            .then(res => res.json())
+            .then(json => {
+                this.setState({showProgress: false});
+                if (!Utils.isEmpty(json)) {
+                    // console.log(json)
+                    if(json.status == 200){
+                       this.getContact(json.data)
+                    }
+                } else {
+                    Toast.showShortCenter("登录失败");
+                }
+            })
+            // .catch(e => {
+            //     console.log("hahahah")
+            //     this.setState({showProgress: false});
+            //     Toast.showShortCenter("网络请求出错: " + e);
+            // });
     }
 
+
+    getContact(conArr){
+        console.log(conArr,conArr.total)
+        let showList = false;
+        if (true) {
+            // console.log("conversation list")
+            LogUtil.d("conversation list: " + JSON.stringify(conArr));
+
+            // LogUtil.d("conversation list: " + JSON.stringify(conArr));
+            // for (let i = 0; i < conArr.total; i++) {
+                showList = true
+                // LogUtil.w(JSON.stringify(conArr[i]));
+                // 这里可以取到会话，但是删除好友后，会话里没有latestMessage，如果所有的会话都没有latestMessage，则不显示会话列表
+                // if (conArr[i].latestMessage) {
+                //     showList = true;
+                // }
+                // 如果当前正在跟这个人聊天，则重置该人的未读消息数
+                // if (Global.currentChattingUsername == conArr.list[i].target.username) {
+                //     conArr.list[i].unreadCount = 0;
+                    // JMessage.resetUnreadMessageCount(
+                    //     {
+                    //         type: Global.currentChattingType,
+                    //         username: Global.currentChattingUsername,
+                    //         appKey: Global.JIMAppKey
+                    //     },
+                    //     () => {
+                    //     },
+                    //     error => {
+                    //     }
+                    // );
+                // }
+            }
+            if (showList) {
+                this.setState({recentConversation: conArr.list});
+            }
+        }
+    // }
     //初始化socket
 
     // initSocket() {
@@ -166,6 +193,7 @@ class HomeScreen extends Component {
     }
 
     componentWillMount() {
+        this.loadConversations();
         CountEmitter.addListener(
             "notifyConversationListRefresh",
             this.notifyConversationListRefreshListener
@@ -184,7 +212,7 @@ class HomeScreen extends Component {
                 <TitleBar nav={this.props.navigation}/>
                 <View style={styles.divider}/>
                 <View style={styles.content}>
-                    {this.state.recentConversation.length == 0 ? (
+                    {this.state.recentConversation.total == 0 ? (
                         <Text style={styles.emptyHintText}>暂无会话消息</Text>
                     ) : (
                         <FlatList
@@ -204,10 +232,10 @@ class HomeScreen extends Component {
                         width: width
                     }}
                 >
-                    <UpgradeDialog
+                    {/* <UpgradeDialog
                         ref="upgradeDialog"
                         content={this.state.upgradeContent}
-                    />
+                    /> */}
                 </View>
             </View>
         );
@@ -217,7 +245,7 @@ class HomeScreen extends Component {
 
     componentDidMount() {
         this.loadConversations();
-
+        console.log(this.state.recentConversation,"didMount state")
         StorageUtil.get("username", (error, object) => {
             if (!error && object && object.username) {
                 this.setState({username: object.username});
@@ -225,49 +253,49 @@ class HomeScreen extends Component {
             }
         });
         // 组件挂载完成后检查是否有更新，只针对Android平台检查
-        if (!this.state.checkedUpgrade) {
-            if (Platform.OS === "android") {
-                UpgradeModule.getVersionCodeName((versionCode, versionName) => {
-                    if (versionCode > 0 && !Utils.isEmpty(versionName)) {
-                        // 请求服务器查询更新
-                        let url =
-                            Api.ANDROID_UPGRADE_URL +
-                            "?versionCode=" +
-                            versionCode +
-                            "&versionName=" +
-                            versionName;
-                        fetch(url)
-                            .then(res => res.json())
-                            .then(json => {
-                                if (json != null && json.code == 1) {
-                                    // 有新版本
-                                    let data = json.msg;
-                                    if (data != null) {
-                                        let newVersionCode = data.versionCode;
-                                        let newVersionName = data.versionName;
-                                        let newVersionDesc = data.versionDesc;
-                                        let downUrl = data.downUrl;
-                                        let content =
-                                            "版本号：" +
-                                            newVersionCode +
-                                            "\n\n版本名称：" +
-                                            newVersionName +
-                                            "\n\n更新说明：" +
-                                            newVersionDesc;
-                                        this.setState({upgradeContent: content}, () => {
-                                            // 显示更新dialog
-                                            this.refs.upgradeDialog.showModal();
-                                        });
-                                    }
-                                }
-                            })
-                            .catch(e => {
-                            });
-                    }
-                });
-            }
-            this.setState({checkedUpgrade: true});
-        }
+        // if (!this.state.checkedUpgrade) {
+        //     if (Platform.OS === "android") {
+        //         UpgradeModule.getVersionCodeName((versionCode, versionName) => {
+        //             if (versionCode > 0 && !Utils.isEmpty(versionName)) {
+        //                 // 请求服务器查询更新
+        //                 let url =
+        //                     Api.ANDROID_UPGRADE_URL +
+        //                     "?versionCode=" +
+        //                     versionCode +
+        //                     "&versionName=" +
+        //                     versionName;
+        //                 fetch(url)
+        //                     .then(res => res.json())
+        //                     .then(json => {
+        //                         if (json != null && json.code == 1) {
+        //                             // 有新版本
+        //                             let data = json.msg;
+        //                             if (data != null) {
+        //                                 let newVersionCode = data.versionCode;
+        //                                 let newVersionName = data.versionName;
+        //                                 let newVersionDesc = data.versionDesc;
+        //                                 let downUrl = data.downUrl;
+        //                                 let content =
+        //                                     "版本号：" +
+        //                                     newVersionCode +
+        //                                     "\n\n版本名称：" +
+        //                                     newVersionName +
+        //                                     "\n\n更新说明：" +
+        //                                     newVersionDesc;
+        //                                 this.setState({upgradeContent: content}, () => {
+        //                                     // 显示更新dialog
+        //                                     this.refs.upgradeDialog.showModal();
+        //                                 });
+        //                             }
+        //                         }
+        //                     })
+        //                     .catch(e => {
+        //                     });
+        //             }
+        //         });
+        //     }
+        //     this.setState({checkedUpgrade: true});
+        // }
     }
 
     renderItem = ({item}) => {
@@ -275,7 +303,8 @@ class HomeScreen extends Component {
             return null;
         }
         // 会话类型（单聊或群聊）
-        let type = item.conversationType;
+        // let type = item.conversationType;
+        let type = "group";
         let target = item.target;
         let lastMsg = item.latestMessage;
         let lastTime = lastMsg.createTime / 1000;
@@ -285,8 +314,8 @@ class HomeScreen extends Component {
         let avatar;
         if (type === "group") {
             // 群聊
-            contactId = target.id; // groupId
-            nick = item.title; // 群名称
+            contactId = target._id; // groupId
+            nick = item.name; // 群名称
             avatar = require("./images/ic_group_chat.png"); // 群头像
         } else {
             // 单聊
@@ -310,7 +339,7 @@ class HomeScreen extends Component {
         }
 
         if (type === "single") {
-            this.downloadUserAvatarThumb(contactId);
+            // this.downloadUserAvatarThumb(contactId);
         }
 
         // 显示出来的最后一条消息
@@ -524,9 +553,10 @@ const tabNavigatorScreen = createBottomTabNavigator(
 
 const MyApp = createStackNavigator(
     {
-        // Splash: {screen: SplashScreen},
-        RedPacket: {screen: RedPacket},
+        Splash: {screen: SplashScreen},
         Home: {screen: tabNavigatorScreen},
+        Base:{screen:Base},
+        RedPacket: {screen: RedPacket},
         Search: {screen: SearchScreen},
         ContactDetail: {screen: ContactDetailScreen},
         Chatting: {screen: ChattingScreen},

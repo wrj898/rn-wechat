@@ -14,6 +14,10 @@ target 'RNWeChat' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'react-native-image-sequence', :path => '../node_modules/react-native-image-sequence'
+
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
 end
 
 post_install do |installer|

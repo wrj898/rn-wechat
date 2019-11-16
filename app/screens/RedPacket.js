@@ -16,6 +16,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import UserInfoUtil from "../utils/UserInfoUtil";
 
 const {width} = Dimensions.get("window");
 
@@ -25,29 +26,74 @@ export default class RedPacketScreen extends Component {
         this.state = {
             displayTips: false,
             liked: true,
+            amount: 0,
+            roomId:"",
+            roomType:0,
+            packetCount: 0,
+            keys: [],
             showProgress: false
         };
+        this.groupId = this.props.navigation.state.params.groupId;
+
     }
+
+
+    checkAmount(text) {
+        this.setState({amount: Number(text)})
+        if ((text < 1 || text > 1000) && text > 0) {
+            this.setState({displayTips: true})
+        } else {
+            this.setState({displayTips: false})
+        }
+    }
+
+    checkPackets(text) {
+
+    }
+
+    componentWillMount() {
+
+    }
+
+    setKeys(text){
+
+        let a = this.state.keys
+        a[0] = Number(text)
+        this.setState({keys:a})
+
+    }
+
+
 
     render() {
         return (
             <View style={styles.container}>
                 <CommonTitleBar nav={this.props.navigation} title={"扫雷红包"}/>
+                {this.state.showProgress ? (
+                    <LoadingView cancel={() => this.setState({ showProgress: false})} />
+                ) : null}
                 <View>
-                    <Text style={styles.headerAmount}>100</Text>
+                    <Text style={styles.headerAmount}>{this.state.amount}</Text>
+                    {this.state.displayTips &&
                     <Text style={styles.tips}>红包金额不能小于1.00</Text>
+                    }
                 </View>
                 <View style={inviteStyle.container}>
-                    <View style={{flexDirection: "row"}}>
+                    <View style={{flexDirection: "row", flex: 2}}>
                         <View style={inviteStyle.menuContainer}>
                             <Text style={inviteStyle.menuText}>金额</Text>
                         </View>
                     </View>
-                    <View style={{flexDirection: 'row',alignItems:"center"}}>
-                        <View>
-                            <TextInput placeholder={"1.00-2000.00"} style={{textAlign: "right",alignItems:"center",paddingRight:10}}/>
+                    <View style={{flexDirection: 'row', alignItems: "center", flex: 8}}>
+                        <View style={{flex: 32}}>
+                            <TextInput placeholder={"1.00-2000.00"}
+                                       style={{textAlign: "right", alignItems: "center", paddingRight: 10}}
+                                       onChangeText={(text) => {
+                                           this.checkAmount(text)
+                                       }}
+                            />
                         </View>
-                        <View>
+                        <View style={{flex: 2}}>
                             <Text style={[inviteStyle.menuText, {}]}>
                                 元
                             </Text>
@@ -56,16 +102,21 @@ export default class RedPacketScreen extends Component {
                 </View>
                 <ListItemDivider/>
                 <View style={inviteStyle.container}>
-                    <View style={{flexDirection: "row"}}>
+                    <View style={{flexDirection: "row", flex: 4}}>
                         <View style={inviteStyle.menuContainer}>
                             <Text style={inviteStyle.menuText}>红包个数</Text>
                         </View>
                     </View>
-                    <View style={{flexDirection: 'row',alignItems:"center"}}>
-                        <View>
-                            <TextInput placeholder={"500-200"} textAlign={'center'} style={{textAlign: "right",paddingRight:10}}/>
+                    <View style={{flexDirection: 'row', alignItems: "center", flex: 6}}>
+                        <View style={{flex: 24}}>
+                            <TextInput placeholder={"500-200"} style={{textAlign: "right", paddingRight: 10}}
+                                onChangeText={(text) => {
+                                    console.log(text)
+                                    this.setState({packetCount:Number(text)})
+                                }}
+                            />
                         </View>
-                        <View>
+                        <View style={{flex: 2}}>
                             <Text style={[inviteStyle.menuText, {}]}>
                                 个
                             </Text>
@@ -74,17 +125,18 @@ export default class RedPacketScreen extends Component {
                 </View>
                 <Text style={styles.centerTips}>红包发布范围:2.00-20.00</Text>
                 <View style={inviteStyle.container}>
-                    <View style={{flexDirection: "row"}}>
+                    <View style={{flexDirection: "row", flex: 2}}>
                         <View style={inviteStyle.menuContainer}>
                             <Text style={inviteStyle.menuText}>雷数</Text>
                         </View>
                     </View>
-                    <View style={{justifyContent: "space-between"}}>
+                    <View style={{justifyContent: "space-between", flex: 8}}>
                         <View>
-                            <TextInput placeholder={"雷数"} style={{textAlign:"right"}}/>
-                        </View>
-                        <View>
-                            <Text style={{}}>{this.state.inviteCode}</Text>
+                            <TextInput placeholder={"雷数"} style={{textAlign: "right"}}
+                                onChangeText={(text) => {
+                                    this.setKeys(text)
+                                }}
+                            />
                         </View>
                     </View>
                 </View>
@@ -101,27 +153,22 @@ export default class RedPacketScreen extends Component {
     }
 
 
-    register() {
+    sendRedPacket() {
         this.setState({showProgress: true});
         //请求服务器注册接口
-        var registerUrl = Api.REGISTER_URL;
-        // let formData = new FormData();
-        // formData.append("username", username);
-        // formData.append("password", password);
-        // formData.append("verifyCode",verifyCode)
-        // formData.append("inviteCode",inviteCode)
+        let url = Api.ROOMS + this.groupId + "/packet";
 
-        fetch(registerUrl, {
+        fetch(url , {
             method: "POST",
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token
             },
             body: JSON.stringify({
-                "phone": username,
-                "code": verifyCode,
-                "registerCode": inviteCode,
-                "password": password
+                "account": this.state.amount,
+                "count": this.state.packetCount,
+                "keys": this.state.keys
             })
         })
             .then(res => res.json())
@@ -129,9 +176,9 @@ export default class RedPacketScreen extends Component {
                 console.log(json);
                 if (!Utils.isEmpty(json)) {
                     if (json.status === 200) {
-                        // this.registerToJIM(username, password);
-                        //注册成功
-                        Toast.showShortCenter("注册成功");
+                        this.setState({showProgress: false});
+                        Toast.showShortCenter("发包成功");
+                        this.navigation.goBack()
                     } else {
                         this.setState({showProgress: false});
                         Toast.showShortCenter(json.message);
@@ -146,26 +193,7 @@ export default class RedPacketScreen extends Component {
             });
     }
 
-    // 注册极光IM
-    registerToJIM(username, password) {
-        JMessage.register(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                Toast.showShortCenter("注册成功");
-                StorageUtil.set("username", {username: username});
-                // 关闭当前页面
-                this.props.navigation.goBack();
-                // 跳转到登录界面
-                this.props.navigation.navigate("Login");
-            },
-            e => {
-                Toast.showShortCenter("注册失败：" + e);
-            }
-        );
-    }
+
 }
 
 const styles = StyleSheet.create({
@@ -289,7 +317,7 @@ const inviteStyle = StyleSheet.create({
     menuText: {
         color: '#000000',
         fontSize: 16,
-        alignItems:"center"
+        alignItems: "center"
     },
     inviteButton: {
         color: "#f08532",

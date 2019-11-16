@@ -5,6 +5,7 @@ import {withNavigation} from 'react-navigation';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import {Dimensions, Image, PixelRatio, StyleSheet, Text, TouchableOpacity, View,} from 'react-native';
+import Base from "../screens/Base";
 
 const {width} = Dimensions.get('window');
 
@@ -29,36 +30,20 @@ class MoreView extends Component {
         super(props);
     }
 
-    handleClick() {
-        let index = this.props.index;
-        console.log(this.props, "moreView")
-        switch (index) {
-            case 0:
-                this.props.navigation.navigate("Login");
-                break;
-            default:
-        }
-    }
 
-    chooseImage() { // 从相册中选择图片发送
-        ImagePicker.openPicker({
-            cropping: false
-        }).then(image => {
-            if (this.props.sendImageMessage) {
-                let path = image.path;
-                if (!Utils.isEmpty(path)) {
-                    let name = path.substring(path.lastIndexOf('/') + 1, path.length);
-                    this.props.sendImageMessage(image);
-                }
-            }
-        });
-    }
+
 
     render() {
         var page = [];
         for (var i = 0; i < 2; i++) {
             var row = [];
             for (var j = 0; j < 4; j++) {
+                let index = 0
+                if (i == 0){
+                    index = j
+                }else if( i == 1){
+                    index = 4 + j
+                }
                 row.push(
                     // <Cell
                     //   key={"row" + i + "col" + j}
@@ -68,7 +53,7 @@ class MoreView extends Component {
                     //   sendImageMessage={this.props.sendImageMessage}
                     // />
                     <TouchableOpacity style={styles.cellContainer} activeOpacity={0.6}
-                                      onPress={() => this.handleClick()} key={"row" + i + "clo" + j}>
+                                      onPress={() => this.handleClick(index)} key={"row" + i + "clo" + j}>
                         <View style={styles.cellContainer}>
                             <View style={styles.cellImgContainer}>
                                 <Image style={styles.cellImage} source={icons[i * 4 + j]}/>
@@ -89,6 +74,19 @@ class MoreView extends Component {
             </View>
         );
 
+    }
+    handleClick = (index) => {
+        // console.log(this.props,index, "moreView")
+        switch (index) {
+            case 0:
+                this.props.setMoreView()
+                this.props.navigator.navigate("RedPacket",{
+                    groupId:this.props.groupId,
+                    //TODO 传递房间类型 上下限金额
+                })
+                break;
+            default:
+        }
     }
 }
 

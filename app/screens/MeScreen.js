@@ -11,6 +11,7 @@ import ImageAdapter from "../views/ImageAdapter";
 import Toast from "@remobile/react-native-toast";
 import { NavigationActions, StackActions } from "react-navigation"
 import StorageUtil from "../utils/StorageUtil"
+import Api from "../api/Api"
 
 import {
     Dimensions,
@@ -34,7 +35,8 @@ export default class MeScreen extends Component {
         this.state = {
             userInfo: UserInfoUtil.userInfo,
             avatar: UserInfoUtil.getUserAvatar(),
-            inviteCode : "123356"
+            inviteCode : UserInfoUtil.userInfo.inviteCode,
+            balance:0.00
         };
     }
 
@@ -46,6 +48,23 @@ export default class MeScreen extends Component {
     }
 
     componentWillMount() {
+        //查询余额
+        let url = Api.USER_BALANCE
+        fetch(url,{
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token
+            },
+            method: 'GET',
+        })
+        .then(res => res.json())
+        .then(json => {
+            this.setState({balance:json.data},function(){
+                console.log(this.state)
+            })
+            
+        })
         CountEmitter.addListener(
             "notifyUserInfoUpdated",
             this.notifyUserInfoUpdatedListener
@@ -101,7 +120,7 @@ export default class MeScreen extends Component {
                             {/*/>*/}
                             <View>
                                 <Text>   </Text>
-                                <Text>金额:¥99999.99元</Text>
+                                <Text>金额: ¥ {this.state.balance} 元</Text>
                             </View>
                         </View>
                     {/*</TouchableHighlight>*/}
@@ -116,8 +135,8 @@ export default class MeScreen extends Component {
                             </View>
                             </View>
                             <TouchableOpacity activeOpacity={0.6} onPress={() => this._setClipboardContent()}>
-                                <View style={{justifyContent:"space-between"}}>
-                                    <Text  style={{}}>{this.state.inviteCode}</Text>
+                                <View style={{flexDirection:"row"}}>
+                                    <Text  style={{marginRight:10,alignContent:"center",paddingTop:5}}>{this.state.inviteCode}</Text>
                                     <Text style={[inviteStyle.inviteButton,{}]}>
                                         复制
                                     </Text>
@@ -277,6 +296,10 @@ const inviteStyle = StyleSheet.create({
         fontSize: 16,
     },
     inviteButton: {
+        paddingLeft:5,
+        paddingRight:5,
+        paddingTop:5,
+        paddingBottom:5,
         color:"#f08532",
         borderStyle:"solid",
         textAlign:"center",

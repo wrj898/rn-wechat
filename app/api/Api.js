@@ -1,6 +1,6 @@
 
 export default class Api {
-  static BASE_URL = 'http://api.packet.imusheng.net';
+  static BASE_URL = 'http://api.packet.imusheng.net/api';
   static AVATAR_PREFIX = 'http://static.duoduo111.cn/';
   // static BASE_URL = 'http://192.168.1.109:6001';
 
@@ -16,7 +16,13 @@ export default class Api {
   // 注册
   static REGISTER_URL = Api.BASE_URL + '/api/register';
 
+  static ROOMS = Api.BASE_URL + '/rooms/';
   // 发布朋友圈
+
+  //用户余额
+
+  static USER_BALANCE = Api.BASE_URL + '/users/balance'
+
   static PUBLISH_MOMENT_URL = Api.BASE_URL + '/moments/publish';
 
   // 朋友圈

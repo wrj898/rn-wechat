@@ -154,6 +154,7 @@ export default class LoginScreen extends Component {
                                 nick: data.userinfo.nickname,
                                 avatar: Api.AVATAR_PREFIX + data.userinfo.avatar,
                                 token: data.token,
+                                inviteCode : data.userinfo.code
                                 // inviteCode : data.userinfo.iniviteCode
                             };
                             UserInfoUtil.userInfo = userInfo;

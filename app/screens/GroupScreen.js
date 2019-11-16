@@ -304,8 +304,8 @@ export default class GroupScreen extends Component {
     //     data: item.item
     //   });
     // }
-    // this.props.navigation.navigate("Chatting", {
-      this.props.navigation.navigate("RedPacket", {
+    this.props.navigation.navigate("Chatting", {
+      // this.props.navigation.navigate("RedPacket", {
       chatContactId:item.item._id,
       name: item.item.nick,
       type: "group"
