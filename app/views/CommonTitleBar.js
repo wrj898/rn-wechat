@@ -48,7 +48,7 @@ export default class CommonTitleBar extends Component {
             </TouchableOpacity>
             <View style={styles.btnDivider} />
             <View style={styles.titleContainer}>
-              <Text style={[styles.title,{textAlign:"center"}]}>{this.props.title}</Text>
+              <Text style={[styles.title,{textAlign:"center",marginLeft: 120,fontWeight:"bold"}]}>{this.props.title}</Text>
               {Utils.isEmpty(this.props.rightIcon) ? null : (
                 <TouchableOpacity
                   activeOpacity={0.6}
@@ -58,11 +58,13 @@ export default class CommonTitleBar extends Component {
                 </TouchableOpacity>
               )}
               {Utils.isEmpty(this.props.rightBtnText) ? null : (
-                <Button
-                  onPress={() => this.props.handleRightBtnClick()}
-                  title={this.props.rightBtnText}
-                  color="#19AD17"
-                />
+                  <TouchableOpacity
+                      activeOpacity={0.6}
+                      onPress={() => this.props.handleRightClick()()}
+                  >
+                   <Text style={{marginLeft: 110,color:"#ffffff"}}>{this.props.rightBtnText}</Text>
+
+                  </TouchableOpacity>
               )}
             </View>
           </View>
@@ -103,7 +105,7 @@ export default class CommonTitleBar extends Component {
               <Button
                 onPress={() => this.props.handleRightBtnClick()}
                 title={this.props.rightBtnText}
-                color="#19AD17"
+                // color="#19AD17"
               />
             )}
           </View>
@@ -137,6 +139,7 @@ const styles = StyleSheet.create({
   content: {
     width: width,
     height: 50,
+    justifyContent:"flex-start",
     // backgroundColor: Global.titleBackgroundColor,
     flexDirection: "row",
     alignItems: "center"
@@ -155,16 +158,17 @@ const styles = StyleSheet.create({
     // backgroundColor: "#888888"
   },
   titleContainer: {
+    justifyContent:"flex-start",
     // flex: 1,
     flexDirection: "row",
-    alignItems: "center",
+    // alignItems: "center",
     textAlign: "center",
     paddingLeft: 10,
     paddingRight: 10
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 16
+    fontSize: 20
     // flex: 1,
     // alignContent:"center"
   },

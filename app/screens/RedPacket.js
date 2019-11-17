@@ -166,7 +166,7 @@ export default class RedPacketScreen extends Component {
                 'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token
             },
             body: JSON.stringify({
-                "account": this.state.amount,
+                "amount": this.state.amount,
                 "count": this.state.packetCount,
                 "keys": this.state.keys
             })

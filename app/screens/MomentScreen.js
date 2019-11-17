@@ -36,7 +36,6 @@ export default class MomentScreen extends Component {
     super(props);
     this.state = {
       moments: [],
-      avatar: "",
       showProgress: false,
       menuPos: {},
       menuShow: false,
@@ -418,7 +417,7 @@ export default class MomentScreen extends Component {
       this.doCommentSuccessCallback
     );
   };
-  
+
   componentWillUnmount() {
     CountEmitter.removeListener("updateMomentList", () => {});
   }

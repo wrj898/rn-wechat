@@ -159,7 +159,7 @@ export default class ChattingScreen extends Component {
             .then(json => {
                 // console.log(json)
                 this.setState({messages: json.data.list}, function () {
-                    console.log(this.state.messages);
+                    // console.log(this.state.messages);
                     this.scroll();
                 })
             })
@@ -423,7 +423,7 @@ export default class ChattingScreen extends Component {
     }
 
     renderItem = ({item}) => {
-        console.log(item, item.keys)
+        // console.log(item, item.keys)
         let msgType = item.contentType;
         if (msgType == 0) {
             // 文本消息
@@ -513,7 +513,7 @@ export default class ChattingScreen extends Component {
         if (item.keys.length > 0) {
             hasKeys = true
         }
-        console.log(hasKeys)
+        // console.log(hasKeys)
         if (this.chatType === "group") {
             // 群聊的头像为某个人的头像
             let thumb = Api.AVATAR_PREFIX + item.sender.avatar;
@@ -550,7 +550,7 @@ export default class ChattingScreen extends Component {
                                     ]}
                                 >
                                     <View style={styles.redDesc}>
-                                        <Text style={styles.redAmount}>{item.account}
+                                        <Text style={styles.redAmount}>{item.amount}
                                             {
                                                 item.keys.length ? ` - ${item.keys[0]}` : null
                                             }
@@ -575,38 +575,43 @@ export default class ChattingScreen extends Component {
             avatar = UserInfoUtil.userInfo.avatar;
         }
         return (
-            <View style={{flexDirection: "row", alignItems: "center", marginRight: 5}}>
+            <View style={{flexDirection: "column", alignItems: "center"}}>
                 {this.shouldShowTime(item) ? (
                     <Text style={listItemStyle.time}>
                         {TimeUtils.formatChatTime(parseInt(item.createTime / 1000))}
                     </Text>
                 ) : null}
                 <View style={listItemStyle.containerSend}>
-                    <ImageBackground style={{width: 300, height: 100, marginTop: 50, marginRight: -25}}
-                                     imageStyle={{marginRight: -30}}
-                                     resizeMode="contain"
-                                     source={require('../../imgs/ic_send_red_nor~iphone.png')}>
-                        <View
-                            style={[
+                    {/* <Image style={listItemStyle.avatar} source={contactAvatar} /> */}
+                    <TouchableOpacity activeOpacity={0.6} onPress={() => this.openPacket(item)}>
+                        <View style={{flexDirection: "column"}}>
+                            {/*<Text style={styles.nickname}>{item.sender.nickname}</Text>*/}
+                            <ImageBackground style={{width: 300, height: 100,marginRight: -20}}
+                                             imageStyle={{marginRight: 0}}
+                                             resizeMode="contain"
+                                             source={require('../../imgs/ic_send_red_nor~iphone.png')}>
+                                <View
+                                    style={[
 
-                                {paddingLeft: 0, paddingRight: 0}
-                            ]}
-                        >
-                            <View style={[styles.redDesc, {marginLeft: 90}]}>
-                                <Text style={styles.redAmount}>{item.account}
-                                    {
-                                        item.keys.length ? ` - ${item.keys[0]}` : null
-                                    }
-                                </Text>
-                                <Text style={styles.chakan}>查看红包</Text>
-                                <Text style={[styles.redType, {marginLeft: -50}]}>扫雷红包</Text>
-                            </View>
+                                        {paddingLeft: 0, paddingRight: 0}
+                                    ]}
+                                >
+                                    <View style={[styles.redDesc,{marginLeft:90}]}>
+                                        <Text style={styles.redAmount}>{item.amount}
+                                            {
+                                                item.keys.length ? ` - ${item.keys[0]}` : null
+                                            }
+                                        </Text>
+                                        <Text style={styles.chakan}>查看红包</Text>
+                                        <Text style={styles.redType}>扫雷红包</Text>
+                                    </View>
 
+                                </View>
+                            </ImageBackground>
                         </View>
-                    </ImageBackground>
+                    </TouchableOpacity>
+                    <ImageAdapter width={40} height={40} path={avatar} style={{borderRadius: 20}}/>
                 </View>
-                <ImageAdapter width={40} height={40} path={avatar}/>
-                {/* <Image style={listItemStyle.avatar} source={avatar} /> */}
             </View>
         );
     }

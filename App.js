@@ -9,6 +9,8 @@ import ContactsScreen from "./app/screens/ContactsScreen";
 import GroupScreen from "./app/screens/GroupScreen"
 import HomeScreen from "./app/screens/HomeScreen";
 import RedPacket from "./app/screens/RedPacket";
+import RedPacketDetail from "./app/screens/RedPacketDetail"
+import WithDrawScreen from "./app/screens/WithDrawScreen";
 import MeScreen from "./app/screens/MeScreen";
 import SearchScreen from "./app/screens/SearchScreen";
 import ContactDetailScreen from "./app/screens/ContactDetailScreen";
@@ -553,9 +555,12 @@ const tabNavigatorScreen = createBottomTabNavigator(
 
 const MyApp = createStackNavigator(
     {
+
         Splash: {screen: SplashScreen},
         Home: {screen: tabNavigatorScreen},
         Base:{screen:Base},
+        WithDraw :{screen :WithDrawScreen},
+        RedPacketDetail : {screen :RedPacketDetail},
         RedPacket: {screen: RedPacket},
         Search: {screen: SearchScreen},
         ContactDetail: {screen: ContactDetailScreen},

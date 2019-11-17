@@ -1,23 +1,25 @@
 
 export default class Api {
-  static BASE_URL = 'http://api.packet.imusheng.net/api';
+  // static BASE_URL = 'http://api.packet.imusheng.net/api';
   static AVATAR_PREFIX = 'http://static.duoduo111.cn/';
-  // static BASE_URL = 'http://192.168.1.109:6001';
+  static BASE_URL = 'http://192.168.1.107:6001/api';
 
 
 
   // 登录
-  static LOGIN_URL = Api.BASE_URL + '/api/login';
+  static LOGIN_URL = Api.BASE_URL + '/login';
 
   //获取验证码
 
-  static VERIFY_CODE = Api.BASE_URL + '/api/code'
+  static VERIFY_CODE = Api.BASE_URL + '/code'
 
   // 注册
-  static REGISTER_URL = Api.BASE_URL + '/api/register';
+  static REGISTER_URL = Api.BASE_URL + '/register';
 
   static ROOMS = Api.BASE_URL + '/rooms/';
-  // 发布朋友圈
+  // 提现
+
+  static WITHDRAW = Api.BASE_URL + '/orders/withdraw'
 
   //用户余额
 

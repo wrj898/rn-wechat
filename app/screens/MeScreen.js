@@ -63,7 +63,7 @@ export default class MeScreen extends Component {
             this.setState({balance:json.data},function(){
                 console.log(this.state)
             })
-            
+
         })
         CountEmitter.addListener(
             "notifyUserInfoUpdated",
@@ -163,6 +163,9 @@ export default class MeScreen extends Component {
                     <ListItem
                         icon={require("../../imgs/ic_withdraw~iphone.png")}
                         text={"提现中心"}
+                        handleClick={()=>{
+                            this.turnOnPage("WithDraw")
+                        }}
                     />
                     <ListItemDivider/>
                     <ListItem
