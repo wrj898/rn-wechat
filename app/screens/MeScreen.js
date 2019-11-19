@@ -9,7 +9,7 @@ import TabConfig from "../configs/TabNavConfigs";
 import ListItemDivider from "../views/ListItemDivider";
 import ImageAdapter from "../views/ImageAdapter";
 import Toast from "@remobile/react-native-toast";
-import { NavigationActions, StackActions } from "react-navigation"
+import {NavigationActions, StackActions} from "react-navigation"
 import StorageUtil from "../utils/StorageUtil"
 import Api from "../api/Api"
 
@@ -35,8 +35,8 @@ export default class MeScreen extends Component {
         this.state = {
             userInfo: UserInfoUtil.userInfo,
             avatar: UserInfoUtil.getUserAvatar(),
-            inviteCode : UserInfoUtil.userInfo.inviteCode,
-            balance:0.00
+            inviteCode: UserInfoUtil.userInfo.inviteCode,
+            balance: 0.00
         };
     }
 
@@ -48,27 +48,22 @@ export default class MeScreen extends Component {
     }
 
     componentWillMount() {
-        //查询余额
-        let url = Api.USER_BALANCE
-        fetch(url,{
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token
-            },
-            method: 'GET',
-        })
-        .then(res => res.json())
-        .then(json => {
-            this.setState({balance:json.data},function(){
-                console.log(this.state)
-            })
+        this.checkBalance()
+    }
 
-        })
-        CountEmitter.addListener(
-            "notifyUserInfoUpdated",
-            this.notifyUserInfoUpdatedListener
-        );
+    componentDidMount() {
+        const { navigation } = this.props;
+        this.focusListener = navigation.addListener("willFocus", () => {
+            this.checkBalance()
+        });
+    }
+    componentWillUnmount(){
+       this.focusListener.remove()
+    }
+
+
+    componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+        console.log("me Screen will receive")
     }
 
     componentWillUnmount() {
@@ -82,9 +77,33 @@ export default class MeScreen extends Component {
         this.refreshUserInfo();
     };
 
-    async _setClipboardContent(){
+    async _setClipboardContent() {
         Clipboard.setString(this.state.inviteCode);
         Toast.showShortCenter("复制成功");
+    }
+
+    checkBalance() {
+        //查询余额
+        let url = Api.USER_BALANCE
+        fetch(url, {
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token
+            },
+            method: 'GET',
+        })
+            .then(res => res.json())
+            .then(json => {
+                this.setState({balance: json.data}, function () {
+                    console.log(this.state)
+                })
+
+            })
+        CountEmitter.addListener(
+            "notifyUserInfoUpdated",
+            this.notifyUserInfoUpdatedListener
+        );
     }
 
     render() {
@@ -100,44 +119,48 @@ export default class MeScreen extends Component {
                     {/*        this.turnOnPage("PersonInfo");*/}
                     {/*    }}*/}
                     {/*>*/}
-                        <View style={styles.meInfoContainer}>
-                            <ImageAdapter
-                                width={60}
-                                height={60}
-                                path={UserInfoUtil.userInfo.avatar}
-                            />
-                            <View style={styles.meInfoTextContainer}>
-                                <Text style={styles.meInfoNickName}>
-                                    {this.state.userInfo.username}
-                                </Text>
-                                <Text style={styles.meInfoWeChatId}>
-                                    {"昵称：" + this.state.userInfo.nick}
-                                </Text>
-                            </View>
-                            {/*<Image*/}
-                            {/*    style={styles.meInfoQRCode}*/}
-                            {/*    source={require("../../images/ic_qr_code.png")}*/}
-                            {/*/>*/}
-                            <View>
-                                <Text>   </Text>
-                                <Text>金额: ¥ {this.state.balance} 元</Text>
-                            </View>
+                    <View style={styles.meInfoContainer}>
+                        <ImageAdapter
+                            width={60}
+                            height={60}
+                            path={UserInfoUtil.userInfo.avatar}
+                        />
+                        <View style={styles.meInfoTextContainer}>
+                            <Text style={styles.meInfoNickName}>
+                                {this.state.userInfo.username}
+                            </Text>
+                            <Text style={styles.meInfoWeChatId}>
+                                {"昵称：" + this.state.userInfo.nick}
+                            </Text>
                         </View>
+                        {/*<Image*/}
+                        {/*    style={styles.meInfoQRCode}*/}
+                        {/*    source={require("../../images/ic_qr_code.png")}*/}
+                        {/*/>*/}
+                        <View>
+                            <Text> </Text>
+                            <Text>金额: ¥ {this.state.balance} 元</Text>
+                        </View>
+                    </View>
                     {/*</TouchableHighlight>*/}
                     <View/>
                     <View style={{width: width, height: 20}}/>
                     <View>
                         <View style={inviteStyle.container}>
-                            <View style={{flexDirection:"row"}}>
-                            <Image style={inviteStyle.icon} source={require("../../imgs/ic_invite~iphone.png")}/>
-                            <View style={inviteStyle.menuContainer}>
-                                <Text style={inviteStyle.menuText}>邀请码</Text>
-                            </View>
+                            <View style={{flexDirection: "row"}}>
+                                <Image style={inviteStyle.icon} source={require("../../imgs/ic_invite~iphone.png")}/>
+                                <View style={inviteStyle.menuContainer}>
+                                    <Text style={inviteStyle.menuText}>邀请码</Text>
+                                </View>
                             </View>
                             <TouchableOpacity activeOpacity={0.6} onPress={() => this._setClipboardContent()}>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text  style={{marginRight:10,alignContent:"center",paddingTop:5}}>{this.state.inviteCode}</Text>
-                                    <Text style={[inviteStyle.inviteButton,{}]}>
+                                <View style={{flexDirection: "row"}}>
+                                    <Text style={{
+                                        marginRight: 10,
+                                        alignContent: "center",
+                                        paddingTop: 5
+                                    }}>{this.state.inviteCode}</Text>
+                                    <Text style={[inviteStyle.inviteButton, {}]}>
                                         复制
                                     </Text>
                                 </View>
@@ -163,7 +186,7 @@ export default class MeScreen extends Component {
                     <ListItem
                         icon={require("../../imgs/ic_withdraw~iphone.png")}
                         text={"提现中心"}
-                        handleClick={()=>{
+                        handleClick={() => {
                             this.turnOnPage("WithDraw")
                         }}
                     />
@@ -213,11 +236,11 @@ export default class MeScreen extends Component {
     }
 
     logout() {
-        StorageUtil.set("hasLogin", { hasLogin: false });
+        StorageUtil.set("hasLogin", {hasLogin: false});
         Toast.showShortCenter("注销成功");
         const resetAction = StackActions.reset({
             index: 0,
-            actions: [NavigationActions.navigate({ routeName: "Splash" })]
+            actions: [NavigationActions.navigate({routeName: "Splash"})]
         });
         this.props.navigation.dispatch(resetAction);
     }
@@ -277,7 +300,7 @@ const styles = StyleSheet.create({
 
 const inviteStyle = StyleSheet.create({
     container: {
-        justifyContent:"space-between",
+        justifyContent: "space-between",
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         alignItems: 'center',
@@ -299,15 +322,15 @@ const inviteStyle = StyleSheet.create({
         fontSize: 16,
     },
     inviteButton: {
-        paddingLeft:5,
-        paddingRight:5,
-        paddingTop:5,
-        paddingBottom:5,
-        color:"#f08532",
-        borderStyle:"solid",
-        textAlign:"center",
-        borderWidth:1,
-        borderColor:"#f08532",
+        paddingLeft: 5,
+        paddingRight: 5,
+        paddingTop: 5,
+        paddingBottom: 5,
+        color: "#f08532",
+        borderStyle: "solid",
+        textAlign: "center",
+        borderWidth: 1,
+        borderColor: "#f08532",
         borderRadius: 5,
         backgroundColor: "#fff",
     }

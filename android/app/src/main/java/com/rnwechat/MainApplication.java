@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.facebook.react.ReactApplication;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.zmxv.RNSound.RNSoundPackage;
 import dk.madslee.imageSequence.RCTImageSequencePackage;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -32,6 +33,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new SplashScreenReactPackage(),
             new RNSoundPackage(),
             new RCTImageSequencePackage(),
             new LinearGradientPackage(),

@@ -27,20 +27,26 @@ export default class RedPacketScreen extends Component {
             displayTips: false,
             liked: true,
             amount: 0,
-            roomId:"",
-            roomType:0,
+            roomId: "",
+            roomType: 0,
             packetCount: 0,
             keys: [],
-            showProgress: false
+            showProgress: false,
+            packetLimitEditable: false,
         };
         this.groupId = this.props.navigation.state.params.groupId;
+        this.roomType = this.props.navigation.state.params.roomType;
+        this.packetLimit = this.props.navigation.state.params.packetLimit;
+        this.packetMax = this.props.navigation.state.params.packetMax;
+        this.packetMin = this.props.navigation.state.params.packetMin;
 
     }
 
 
     checkAmount(text) {
         this.setState({amount: Number(text)})
-        if ((text < 1 || text > 1000) && text > 0) {
+        console.log(this.state.amount,"发包金额")
+        if ((text < this.packetMin || text > this.packetMax) && text > 0) {
             this.setState({displayTips: true})
         } else {
             this.setState({displayTips: false})
@@ -52,17 +58,18 @@ export default class RedPacketScreen extends Component {
     }
 
     componentWillMount() {
-
+        if (this.roomType === 3) {
+            this.setState({packetCount:this.packetLimit})
+        }
     }
 
-    setKeys(text){
+    setKeys(text) {
 
         let a = this.state.keys
         a[0] = Number(text)
-        this.setState({keys:a})
+        this.setState({keys: a})
 
     }
-
 
 
     render() {
@@ -70,12 +77,12 @@ export default class RedPacketScreen extends Component {
             <View style={styles.container}>
                 <CommonTitleBar nav={this.props.navigation} title={"扫雷红包"}/>
                 {this.state.showProgress ? (
-                    <LoadingView cancel={() => this.setState({ showProgress: false})} />
+                    <LoadingView cancel={() => this.setState({showProgress: false})}/>
                 ) : null}
                 <View>
                     <Text style={styles.headerAmount}>{this.state.amount}</Text>
                     {this.state.displayTips &&
-                    <Text style={styles.tips}>红包金额不能小于1.00</Text>
+                    <Text style={styles.tips}>红包金额范围为{this.packetMin.toString()}-{this.packetMax.toString()}</Text>
                     }
                 </View>
                 <View style={inviteStyle.container}>
@@ -86,7 +93,7 @@ export default class RedPacketScreen extends Component {
                     </View>
                     <View style={{flexDirection: 'row', alignItems: "center", flex: 8}}>
                         <View style={{flex: 32}}>
-                            <TextInput placeholder={"1.00-2000.00"}
+                            <TextInput placeholder={this.packetMin.toFixed(2).toString() + `-` +this.packetMax.toFixed(2).toString()}
                                        style={{textAlign: "right", alignItems: "center", paddingRight: 10}}
                                        onChangeText={(text) => {
                                            this.checkAmount(text)
@@ -110,10 +117,12 @@ export default class RedPacketScreen extends Component {
                     <View style={{flexDirection: 'row', alignItems: "center", flex: 6}}>
                         <View style={{flex: 24}}>
                             <TextInput placeholder={"500-200"} style={{textAlign: "right", paddingRight: 10}}
-                                onChangeText={(text) => {
-                                    console.log(text)
-                                    this.setState({packetCount:Number(text)})
-                                }}
+                                       onChangeText={(text) => {
+                                           console.log(text)
+                                           this.setState({packetCount: Number(text)})
+                                       }}
+                                       editable={this.state.packetLimitEditable}
+                                       value={this.state.packetLimitEditable ? null : this.packetLimit.toString()}
                             />
                         </View>
                         <View style={{flex: 2}}>
@@ -133,9 +142,9 @@ export default class RedPacketScreen extends Component {
                     <View style={{justifyContent: "space-between", flex: 8}}>
                         <View>
                             <TextInput placeholder={"雷数"} style={{textAlign: "right"}}
-                                onChangeText={(text) => {
-                                    this.setKeys(text)
-                                }}
+                                       onChangeText={(text) => {
+                                           this.setKeys(text)
+                                       }}
                             />
                         </View>
                     </View>
@@ -158,7 +167,7 @@ export default class RedPacketScreen extends Component {
         //请求服务器注册接口
         let url = Api.ROOMS + this.groupId + "/packet";
 
-        fetch(url , {
+        fetch(url, {
             method: "POST",
             headers: {
                 Accept: 'application/json',
@@ -173,12 +182,12 @@ export default class RedPacketScreen extends Component {
         })
             .then(res => res.json())
             .then(json => {
-                console.log(json);
+                console.log(json,"send packet result");
                 if (!Utils.isEmpty(json)) {
                     if (json.status === 200) {
                         this.setState({showProgress: false});
                         Toast.showShortCenter("发包成功");
-                        this.navigation.goBack()
+                        this.props.navigation.goBack()
                     } else {
                         this.setState({showProgress: false});
                         Toast.showShortCenter(json.message);
@@ -187,10 +196,10 @@ export default class RedPacketScreen extends Component {
                     this.setState({showProgress: false});
                 }
             })
-            .catch(e => {
-                Toast.showShortCenter("网络请求出错" + e);
-                this.setState({showProgress: false});
-            });
+            // .catch(e => {
+            //     Toast.showShortCenter("网络请求出错" + e);
+            //     this.setState({showProgress: false});
+            // });
     }
 
 

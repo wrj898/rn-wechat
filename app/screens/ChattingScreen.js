@@ -15,6 +15,8 @@ import ImageAdapter from "../views/ImageAdapter";
 import io from "socket.io-client"
 import Api from "../api/Api"
 import RedPacketDialog from "../views/RedPacketDialog";
+import Toast from "@remobile/react-native-toast"
+import RequestUtil from "../utils/RequestUtil"
 
 import {
     Dimensions,
@@ -54,6 +56,12 @@ export default class ChattingScreen extends Component {
         // 聊天人头像
         this.chatWithAvatar = this.props.navigation.state.params.avatar;
 
+        this.roomType = this.props.navigation.state.params.roomType,
+        this.roomDesc=this.props.navigation.state.params.roomDesc,
+        this.packetLimit = this.props.navigation.state.params.packetLimit,
+        this.packetMin =this.props.navigation.state.params.packetMin,
+        this.packetMax= this.props.navigation.state.params.packetMax,
+        this.packetRate = this.props.navigation.state.params.packetRate,
         // 记录当前正在聊天的id(单个用户的username或群id)
         Global.currentChattingUsername = this.chatContactId;
         Global.currentChattingType = this.chatType;
@@ -63,20 +71,7 @@ export default class ChattingScreen extends Component {
     }
 
     componentWillMount() {
-        let url = Api.BASE_URL
-        let token = UserInfoUtil.userInfo.token;
-        let soc = io(url, {
-            path: "/socket.io",
-            query: {token: token}
-        })
-        soc.on("message", function (data) {
-            console.log(data, "receive Socket message")
-        })
-        this.setState({
-            socket: soc
-        })
-        console.log(soc)
-        console.log(this.state.socket, "chatting socket")
+
         // android需要调用进入会话的api，进入会话后android不会有通知栏消息
         if (Platform.OS === "android") {
             let options = {
@@ -136,6 +131,20 @@ export default class ChattingScreen extends Component {
     }
 
     componentDidMount() {
+        let url = Api.WS_URL
+        let token = UserInfoUtil.userInfo.token;
+        let soc = io(url, {
+            path: "/socket.io",
+            query: {token: token}
+        })
+        soc.on("message", function (data) {
+            console.log(data, "receive Socket message")
+        })
+        this.setState({
+            socket: soc
+        })
+        console.log(soc)
+        console.log(this.state.socket, "chatting socket")
         // this.refs.redPacketDialog.showModal();
     }
 
@@ -225,9 +234,17 @@ export default class ChattingScreen extends Component {
                         }}
                     />
                     <View style={{height: Global.addViewHeight}}>
-                        <MoreView navigator={this.props.navigation} setMoreView={() => {
-                            this.setState({showMoreView: false})
-                        }} groupId={this.chatContactId}/>
+                        <MoreView
+                            navigator={this.props.navigation}
+                            setMoreView={() => {
+                                this.setState({showMoreView: false})
+                            }}
+                            groupId={this.chatContactId}
+                            roomType={this.roomType}
+                            packetLimit = {this.packetLimit}
+                            packetMin = {this.packetMin}
+                            packetMax = {this.packetMax}/>
+
                     </View>
                 </View>
             );
@@ -272,6 +289,7 @@ export default class ChattingScreen extends Component {
                     <RedPacketDialog
                         ref="redPacketDialog"
                         content={"hello"}
+                        navigation={this.props.navigation}
                     />
                 </View>
             </View>
@@ -586,7 +604,7 @@ export default class ChattingScreen extends Component {
                     <TouchableOpacity activeOpacity={0.6} onPress={() => this.openPacket(item)}>
                         <View style={{flexDirection: "column"}}>
                             {/*<Text style={styles.nickname}>{item.sender.nickname}</Text>*/}
-                            <ImageBackground style={{width: 300, height: 100,marginRight: -20}}
+                            <ImageBackground style={{width: 300, height: 100, marginRight: -20}}
                                              imageStyle={{marginRight: 0}}
                                              resizeMode="contain"
                                              source={require('../../imgs/ic_send_red_nor~iphone.png')}>
@@ -596,7 +614,7 @@ export default class ChattingScreen extends Component {
                                         {paddingLeft: 0, paddingRight: 0}
                                     ]}
                                 >
-                                    <View style={[styles.redDesc,{marginLeft:90}]}>
+                                    <View style={[styles.redDesc, {marginLeft: 90}]}>
                                         <Text style={styles.redAmount}>{item.amount}
                                             {
                                                 item.keys.length ? ` - ${item.keys[0]}` : null
@@ -605,7 +623,6 @@ export default class ChattingScreen extends Component {
                                         <Text style={styles.chakan}>查看红包</Text>
                                         <Text style={styles.redType}>扫雷红包</Text>
                                     </View>
-
                                 </View>
                             </ImageBackground>
                         </View>
@@ -616,9 +633,37 @@ export default class ChattingScreen extends Component {
         );
     }
 
-    openPacket(item){
-        this.refs.redPacketDialog.showModal(item);
+    openPacket(item) {
+        this.setState({showProgress:true})
+        let url = Api.USER_BALANCE
+        let res = fetch(url, {
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + UserInfoUtil.userInfo.token,
+            }
+        }).then(res => res.json())
+            .then(json => {
+                this.setState({showProgress: false});
+                if (json.status == 200) {
+                    if (json.data <= item.amount * this.packetRate) {
+                        Toast.showShortCenter("账号余额不足赔付，请先充值")
+                        return
+                    }else{
+                        this.refs.redPacketDialog.showModal(item);
+                    }
+                }
+            })
+        .catch(e => {
+            this.setState({showProgress: false});
+            Toast.showShortCenter("网络请求出错: " + e);
+        });
+        // let json = res.json()
+        //检查是否领完，余额是否足够
+
     }
+
+
     componentWillUnmount() {
         if (Platform.OS === "android") {
             JMessage.exitConversation();

@@ -10,27 +10,26 @@ import Base from "../screens/Base";
 const {width} = Dimensions.get('window');
 
 const icons = [
-    require('../../imgs/ic_tab_reward~iphone.png'),
-    require('../../imgs/ic_tab_join~iphone.png'),
+    // require('../../imgs/ic_tab_reward~iphone.png'),
+    // require('../../imgs/ic_tab_join~iphone.png'),
     require('../../imgs/ic_tab_red~iphone.png'),
-    require('../../imgs/ic_tab_recharge~iphone.png'),
-    require('../../imgs/icon_plugin_rp~iphone.png'),
-    require('../../imgs/ic_tab_rule~iphone.png'),
-    require('../../imgs/ic_tab_help~iphone.png'),
-    require('../../imgs/ic_tab_custom~iphone.png'),
+    // require('../../imgs/ic_tab_recharge~iphone.png'),
+    // require('../../imgs/icon_plugin_rp~iphone.png'),
+    // require('../../imgs/ic_tab_rule~iphone.png'),
+    // require('../../imgs/ic_tab_help~iphone.png'),
+    // require('../../imgs/ic_tab_custom~iphone.png'),
 ];
 
 const iconTexts = [
-    "福利", "加盟", "红包", "充值",
-    "玩法", "群规", "帮助", "客服"
+    "红包"
+    // "福利", "加盟", "红包", "充值",
+    // "玩法", "群规", "帮助", "客服"
 ];
 
 class MoreView extends Component {
     constructor(props) {
         super(props);
     }
-
-
 
 
     render() {
@@ -82,7 +81,12 @@ class MoreView extends Component {
                 this.props.setMoreView()
                 this.props.navigator.navigate("RedPacket",{
                     groupId:this.props.groupId,
-                    //TODO 传递房间类型 上下限金额
+                    roomType:this.props.roomType,
+                    packetMax:this.props.packetMax,
+                    packetMin:this.props.packetMin,
+                    packetLimit:this.props.packetLimit
+
+
                 })
                 break;
             default:

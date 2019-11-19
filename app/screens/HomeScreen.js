@@ -192,7 +192,13 @@ export default class HomeScreen extends Component {
                 nick: name,
                 pinyin: "A",
                 firstLetter: "A",
-                sectionStart: false
+                sectionStart: false,
+                roomType:item.type,
+                roomDesc:item.description,
+                packetLimit:item.keyNumber,
+                packetMin:item.min,
+                packetMax:item.max,
+                packetRate:item.rate,
             });
         }
         // console.log("---------------")
@@ -308,7 +314,14 @@ export default class HomeScreen extends Component {
             // this.props.navigation.navigate("RedPacket", {
             chatContactId:item.item._id,
             name: item.item.nick,
-            type: "group"
+            type: "group",
+            roomType:item.item.roomType,
+            roomDesc:item.item.roomDesc,
+            packetLimit:item.item.packetLimit,
+            packetMin:item.item.packetMin,
+            packetMax:item.item.packetMax,
+            packetRate:item.item.packetRate,
+
             // avatar: this.userInfo.icon
         });
     }

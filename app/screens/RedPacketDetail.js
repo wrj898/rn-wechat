@@ -20,10 +20,8 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    ImageBackground,
-    Clipboard,
-    TouchableHighlight,
-    View, TouchableOpacity
+
+    View
 } from "react-native";
 import CommonTitleBar from "../views/CommonTitleBar";
 import PacketResultItem from "../views/PacketResultItem";
@@ -38,9 +36,39 @@ export default class RedPacketDetailScreen extends Component {
             userInfo: UserInfoUtil.userInfo,
             avatar: UserInfoUtil.getUserAvatar(),
             // inviteCode : UserInfoUtil.userInfo.inviteCode,
+            openedAmount:0.00,
+            bestIndex: -1,
             balance: 0.00
         };
         this.packet = this.props.navigation.state.params.packet
+        console.log(this.packet, "detail construct")
+    }
+
+    calculateOpenedAmount(packet){
+        let i
+        let tmpAmount = 0
+        let tmpIndex = -1
+        let openedAmount = 0.00
+        let list = packet.data.list
+        let _packet = packet.data.packet
+
+        for( i = 0; i < list.length; i++){
+            openedAmount = openedAmount + list[i].amount
+            if(_packet.count == list.length){
+               if(i == 0){
+                   tmpIndex = i
+                   tmpAmount = list[i].amount
+               }else{
+                   if(list[i].amount> tmpAmount){
+                       tmpAmount = list[i].amount
+                       tmpIndex = i
+                   }
+               }
+            }
+        }
+        this.setState({openedAmount:openedAmount,bestIndex:tmpIndex})
+        // return tmpArr
+       // console.log("caculate best")
     }
 
     refreshUserInfo() {
@@ -51,7 +79,7 @@ export default class RedPacketDetailScreen extends Component {
     }
 
     componentWillMount() {
-        console.log(this.packet)
+        this.calculateOpenedAmount(this.packet)
         CountEmitter.addListener(
             "notifyUserInfoUpdated",
             this.notifyUserInfoUpdatedListener
@@ -70,6 +98,10 @@ export default class RedPacketDetailScreen extends Component {
     };
 
     render() {
+        let senderAvatar = "../../images/avatar.png"
+        if (!Utils.isEmpty(this.packet.data.packet.sender.avatar)) {
+            senderAvatar = Api.AVATAR_PREFIX + this.packet.data.packet.sender.avatar
+        }
         return (
             <View style={styles.container}>
                 <CommonTitleBar
@@ -88,30 +120,55 @@ export default class RedPacketDetailScreen extends Component {
                         <ImageAdapter
                             width={60}
                             height={60}
-                            path={require("../../images/avatar.png")}
+                            path={senderAvatar}
                         />
                         <View style={styles.meInfoTextContainer}>
                             <Text style={styles.meInfoWeChatId}>
-                                帅气的青蛙
+                                {this.packet.data.packet.sender.nickname}
                             </Text>
                         </View>
                         <View>
-                            <Text>5.00-[8]</Text>
+                            <Text>{this.packet.data.packet.amount}{
+                                this.packet.data.packet.keys.length ? ` - ${this.packet.data.packet.keys[0]}` : null
+                            }</Text>
                         </View>
                     </View>
-                    <View style={{width:width,backgroundColor:"#FFFFFF",fontSize:18,paddingLeft:10,paddingTop:5,paddingBottom:10}}>
-                        <Text>已领取7/7个,共5.00/5.00金币</Text>
+                    <View style={{
+                        width: width,
+                        backgroundColor: "#FFFFFF",
+                        fontSize: 18,
+                        paddingLeft: 10,
+                        paddingTop: 5,
+                        paddingBottom: 10
+                    }}>
+                        <Text>已领取{this.packet.data.list.length}/{this.packet.data.packet.count}个,共{this.state.openedAmount.toFixed(2)}/{this.packet.data.packet.amount.toFixed(2)}</Text>
                     </View>
-                    {this.packet.data.list.map((value,index) => {
-                       let avatar = Api.AVATAR_PREFIX + value.user.avatar
-                        return( <PacketResultItem
-                            avatar={require("../../images/avatar.png")}
-                            nickname={value.user.nickname}
-                            hit={true}
-                            best={true}
-                            date={"02:15:53"}
-                        />
-                        )})}
+                    {this.packet.data.list.map((value, index) => {
+                        let avatar = ""
+                        let nickName = ""
+                        if(!Utils.isEmpty(value.user.avatar) && !Utils.isEmpty(value.user.nickname)){
+                            avatar = Api.AVATAR_PREFIX + value.user.avatar
+                            nickName = value.user.nickname
+                        }else{
+                            avatar = Api.AVATAR_PREFIX + "jiesuan.png"
+                            nickName = "免死"
+                        }
+                        //最佳
+                        let best = false
+                        if(this.state.bestIndex > -1 && index == this.state.bestIndex){
+                            best = true
+                        }
+                        return (<PacketResultItem
+                                key={index}
+                                avatar={avatar}
+                                nickname={nickName}
+                                hit={value.isHit}
+                                amount={value.amount}
+                                best={best}
+                                date={value.createdAt}
+                            />
+                        )
+                    })}
 
                     <ListItemDivider/>
                 </ScrollView>

@@ -20,7 +20,7 @@ import ScanScreen from "./app/screens/ScanScreen";
 import ScanResultScreen from "./app/screens/ScanResultScreen";
 import ShoppingScreen from "./app/screens/ShoppingScreen";
 import CardPackageScreen from "./app/screens/CardPackageScreen";
-import SplashScreen from "./app/screens/SplashScreen";
+import StartScreen from "./app/screens/SplashScreen";
 import LoginScreen from "./app/screens/LoginScreen";
 import RegisterScreen from "./app/screens/RegisterScreen";
 import FriendMsgScreen from "./app/screens/FriendMsgScreen";
@@ -112,11 +112,11 @@ class SuspendScreen extends Component {
                     Toast.showShortCenter("登录失败");
                 }
             })
-            // .catch(e => {
-            //     console.log("hahahah")
-            //     this.setState({showProgress: false});
-            //     Toast.showShortCenter("网络请求出错: " + e);
-            // });
+            .catch(e => {
+                console.log("hahahah")
+                this.setState({showProgress: false});
+                Toast.showShortCenter("网络请求出错: " + e);
+            });
     }
 
 
@@ -556,7 +556,7 @@ const tabNavigatorScreen = createBottomTabNavigator(
 const MyApp = createStackNavigator(
     {
 
-        Splash: {screen: SplashScreen},
+        Splash: {screen: StartScreen},
         Home: {screen: tabNavigatorScreen},
         Base:{screen:Base},
         WithDraw :{screen :WithDrawScreen},

@@ -1,8 +1,9 @@
 
 export default class Api {
-  // static BASE_URL = 'http://api.packet.imusheng.net/api';
+  static BASE_URL = 'http://api.packet.imusheng.net/api';
+  static WS_URL = 'http://api.packet.imusheng.net';
   static AVATAR_PREFIX = 'http://static.duoduo111.cn/';
-  static BASE_URL = 'http://192.168.1.107:6001/api';
+  // static BASE_URL = 'http://192.168.1.107:6001/api';
 
 
 

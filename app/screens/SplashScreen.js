@@ -7,6 +7,7 @@ import TabConfig from "../configs/TabNavConfigs";
 import LogUtil from "../utils/LogUtil";
 import DBHelper from "../utils/DBHelper";
 import UserInfoUtil from "../utils/UserInfoUtil";
+import Splash from 'react-native-splash-screen'
 import { NavigationActions, StackActions } from "react-navigation";
 
 import {
@@ -22,7 +23,7 @@ import {
 
 const { width, height } = Dimensions.get("window");
 
-export default class SplashScreen extends Component {
+export default class StartScreen extends Component {
   constructor(props) {
     super(props);
     this.isAutoLogin = false;
@@ -100,6 +101,7 @@ export default class SplashScreen extends Component {
   }
 
   componentDidMount() {
+    Splash.hide();
     // 这里不要用this.state.hasLogin判断
     StorageUtil.get("hasLogin", (error, object) => {
       if (!error && object != null && object.hasLogin) {

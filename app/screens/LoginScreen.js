@@ -52,6 +52,9 @@ export default class LoginScreen extends Component {
         return (
             <View style={styles.container}>
                 <CommonTitleBar nav={this.props.navigation} title={"登录"}/>
+                {this.state.showProgress ? (
+                    <LoadingView cancel={() => this.setState({showProgress: false})}/>
+                ) : null}
                 <View style={styles.content}>
                     <View style={styles.pwdView}>
                         <View style={styles.pwdContainer}>
